@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "287563858783",
+    "project_id": "expensi-eccb4",
+    "storage_bucket": "expensi-eccb4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287563858783:android:ed26de04edcf24c48d6cea",
+        "android_client_info": {
+          "package_name": "com.example.expensi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjKTLcI5GHObKL_67T0qGQzp-DCJOPxJY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
