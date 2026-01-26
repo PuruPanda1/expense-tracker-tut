@@ -2,6 +2,8 @@ package com.group4.expensi.ui.transaction
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.group4.expensi.data.local.entity.Category
+import com.group4.expensi.data.local.entity.PaymentMode
 import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.data.local.repository.TransactionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +28,20 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
                     }
                 }
         }
+        viewModelScope.launch {
+            transactionRepository
+                .getAllCategoryStream()
+                .collect { categories ->
+                    _categoryMap.value = categories.associateBy { it.catId }
+                }
+        }
+        viewModelScope.launch {
+            transactionRepository
+                .getAllPaymentModesStream()
+                .collect { modes ->
+                    _paymentModeMap.value = modes.associateBy { it.ptId }
+                }
+        }
     }
 
     fun addTransaction(transaction: Transaction){
@@ -39,5 +55,16 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
             transactionRepository.deleteTransaction(transaction)
         }
     }
+    fun updateTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            transactionRepository.updateTransaction(transaction)
+        }
+    }
 
+    private val _categoryMap = MutableStateFlow<Map<Long, Category>>(emptyMap())
+    val categoryMap: StateFlow<Map<Long, Category>> = _categoryMap.asStateFlow()
+    private val _paymentModeMap =
+        MutableStateFlow<Map<Long, PaymentMode>>(emptyMap())
+
+    val paymentModeMap: StateFlow<Map<Long, PaymentMode>> = _paymentModeMap
 }

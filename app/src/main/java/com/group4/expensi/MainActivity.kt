@@ -26,6 +26,8 @@ import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.ui.theme.ExpensiTheme
 import com.group4.expensi.ui.transaction.TransactionViewModel
 import com.group4.expensi.ui.transaction.TransactionViewModelFactory
+import com.group4.expensi.ui.transaction.screen.EntryTransactionScreenUI
+import com.group4.expensi.ui.transaction.screen.TransactionListScreen
 import java.util.Date
 
 class MainActivity : ComponentActivity() {
@@ -34,27 +36,37 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ExpensiTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 //                    Greeting(
 //                        name = "Android",
 //                        modifier = Modifier.padding(innerPadding)
 //                    )
-                    AddTransactionScreen(
-                        innerPadding,
-                        viewModel(
-                            factory = TransactionViewModelFactory(
-                                (LocalContext.current.applicationContext
-                                        as ExpensiApplication)
-                                    .container
-                                    .transactionRepository
-                            )
-                        )
-                    )
+//                    AddTransactionScreen(
+//                        innerPadding,
+//                        viewModel(
+//                            factory = TransactionViewModelFactory(
+//                                (LocalContext.current.applicationContext
+//                                        as ExpensiApplication)
+//                                    .container
+//                                    .transactionRepository
+//                            )
+//                        )
+//                    )
+//                TransactionListScreen(
+//                    viewModel(
+//                        factory = TransactionViewModelFactory(
+//                            (LocalContext.current.applicationContext as ExpensiApplication)
+//                                .container
+//                                .transactionRepository
+//                        )
+//                    )
+//                )
+                EntryTransactionScreenUI()
                 }
             }
         }
     }
-}
+
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
