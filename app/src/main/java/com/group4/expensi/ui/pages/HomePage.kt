@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,12 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.graphics.drawscope.Stroke
 import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.data.model.CategoryExpense
+import com.group4.expensi.ui.theme.*
 
 @Composable
 fun HomePage(
@@ -37,21 +38,15 @@ fun HomePage(
 
 @Composable
 private fun LoadingState() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(color = PrimaryBlue)
     }
 }
 
 @Composable
 private fun ErrorState(message: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = message)
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = message, color = Color.Red)
     }
 }
 
@@ -62,6 +57,7 @@ private fun HomeContent(state: HomeUiState) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Background)
             .padding(16.dp)
     ) {
 
@@ -69,10 +65,7 @@ private fun HomeContent(state: HomeUiState) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        IncomeExpenseRow(
-            income = state.totalIncome,
-            expense = state.totalExpense
-        )
+        IncomeExpenseRow(state.totalIncome, state.totalExpense)
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -109,20 +102,16 @@ private fun HomeContent(state: HomeUiState) {
 private fun BalanceCard(balance: Double) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
-        )
+        colors = CardDefaults.cardColors(containerColor = PrimaryBlue),
+        shape = RoundedCornerShape(20.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Total Balance",
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+        Column(Modifier.padding(20.dp)) {
+            Text("Total Balance", color = Ivory)
             Text(
                 text = "₹ %.2f".format(balance),
-                style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary
+                style = MaterialTheme.typography.headlineMedium,
+                color = Ivory
             )
         }
     }
@@ -130,43 +119,35 @@ private fun BalanceCard(balance: Double) {
 
 @Composable
 private fun IncomeExpenseRow(income: Double, expense: Double) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        SummaryCard(
-            title = "Income",
-            amount = income,
-            modifier = Modifier.weight(1f)
-        )
-        SummaryCard(
-            title = "Expense",
-            amount = expense,
-            modifier = Modifier.weight(1f)
-        )
+    Row(Modifier.fillMaxWidth()) {
+        SummaryCard("Income", income, Modifier.weight(1f))
+        SummaryCard("Expense", expense, Modifier.weight(1f))
     }
 }
 
 @Composable
-private fun SummaryCard(
-    title: String,
-    amount: Double,
-    modifier: Modifier
-) {
+private fun SummaryCard(title: String, amount: Double, modifier: Modifier) {
     Card(
-        modifier = modifier.padding(4.dp)
+        modifier = modifier.padding(6.dp),
+        colors = CardDefaults.cardColors(containerColor = Ivory),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            Modifier.padding(14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = title)
+            Text(title, color = GrayText)
             Text(
                 text = "₹ %.2f".format(amount),
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
             )
         }
     }
 }
 
-/* -------------------- PIE CHART -------------------- */
+/* -------------------- DONUT CHART -------------------- */
 
 @Composable
 fun ExpenseDonutChart(
@@ -175,19 +156,17 @@ fun ExpenseDonutChart(
 ) {
     val totalSpent = data.sumOf { it.total }
 
-    if (data.isEmpty() || totalSpent <= 0.0) {
-        Text("No category expense data available")
+    if (data.isEmpty() || totalSpent <= 0) {
+        Text("No category expense data available", color = GrayText)
         return
     }
 
-
     val colors = listOf(
-        Color(0xFFFF5252), // Red
-        Color(0xFFFFA726), // Orange
-        Color(0xFFFFEB3B), // Yellow
-        Color(0xFF66BB6A), // Green
-        Color(0xFF42A5F5), // Blue
-        Color(0xFFAB47BC)  // Purple
+        PrimaryBlue,
+        Color(0xFF8E8BE8),
+        Color(0xFFB6B4F2),
+        Color(0xFFD6D5FA),
+        Color(0xFFEAEAFF)
     )
 
     Box(
@@ -197,54 +176,44 @@ fun ExpenseDonutChart(
         contentAlignment = Alignment.Center
     ) {
 
-        // 🔵 DONUT
         Canvas(modifier = Modifier.fillMaxSize()) {
             var startAngle = -90f
 
             data.forEachIndexed { index, item ->
                 val sweepAngle =
-                    (item.total / totalSpent * 360).toFloat()
+                    ((item.total / totalSpent) * 360).toFloat()
 
                 drawArc(
                     color = colors[index % colors.size],
                     startAngle = startAngle,
                     sweepAngle = sweepAngle,
                     useCenter = false,
-                    style = Stroke(width = 50f),
-                    size = Size(size.width, size.height),
-                    topLeft = Offset.Zero
+                    style = Stroke(width = 48f)
                 )
 
                 startAngle += sweepAngle
             }
         }
 
-        // 🔵 CENTER TEXT
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("Total Spent", color = GrayText)
             Text(
-                text = "Total Spent",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = "₹ %.0f".format(totalSpent),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "Balance Left",
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = "₹ %.0f".format(totalBalance),
+                "₹ %.0f".format(totalSpent),
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(Modifier.height(4.dp))
+            Text("Balance Left", color = GrayText)
+            Text(
+                "₹ %.0f".format(totalBalance),
+                fontWeight = FontWeight.Bold,
+                color = PrimaryBlue
             )
         }
     }
 
-    Spacer(modifier = Modifier.height(12.dp))
+    Spacer(Modifier.height(12.dp))
 
-    // 🔵 LEGEND
     Column {
         data.forEachIndexed { index, item ->
             Row(
@@ -252,37 +221,32 @@ fun ExpenseDonutChart(
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Box(
-                    modifier = Modifier
+                    Modifier
                         .size(12.dp)
                         .background(colors[index % colors.size], CircleShape)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "${item.catTitle} • ${"%.1f".format((item.total / totalSpent) * 100)}%"
+                    "${item.catTitle} • ${"%.1f".format((item.total / totalSpent) * 100)}%",
+                    color = GrayText
                 )
             }
         }
     }
 }
 
-
-/* -------------------- TRANSACTION LIST -------------------- */
+/* -------------------- TRANSACTIONS -------------------- */
 
 @Composable
 private fun TransactionList(transactions: List<Transaction>) {
     if (transactions.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "No transactions available")
-        }
+        Text("No transactions available", color = GrayText)
         return
     }
 
     LazyColumn {
-        items(transactions) { transaction ->
-            TransactionItem(transaction)
+        items(transactions) {
+            TransactionItem(it)
         }
     }
 }
@@ -292,21 +256,17 @@ private fun TransactionItem(transaction: Transaction) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 6.dp),
+        colors = CardDefaults.cardColors(containerColor = Ivory),
+        shape = RoundedCornerShape(14.dp)
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            Modifier.padding(14.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text(
-                    text = transaction.tTitle,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = transaction.tDescription,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Text(transaction.tTitle, fontWeight = FontWeight.Bold)
+                Text(transaction.tDescription, color = GrayText)
             }
             Text(
                 text = if (transaction.tIsExpense)
@@ -317,7 +277,7 @@ private fun TransactionItem(transaction: Transaction) {
                 color = if (transaction.tIsExpense)
                     MaterialTheme.colorScheme.error
                 else
-                    MaterialTheme.colorScheme.primary
+                    PrimaryBlue
             )
         }
     }
