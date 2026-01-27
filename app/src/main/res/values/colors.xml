@@ -7,4 +7,34 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="primary_blue">#5F5BC8</color>
+    <color name="translucent_primary">#205F5BC8</color>
+    <color name="splash_screen">#5F5BC8</color>
+    <color name="GrayText">#B4B8C1</color>
+    <color name="buttonColor">#FFFFFFFF</color>
+    <color name="background">#F8F9FD</color>
+    <color name="roundImage">#dbbfd4</color>
+    <color name="ivory">#FFFFF0</color>
+    <color name="primaryTextColor">#1B1C1E</color>
+    <color name="primaryBackground">#E6E6FA</color>
+    <color name="onBoardingBackground">#E6E6FA</color>
+    <color name="cardBackground">#E6E6FA</color>
+    <color name="optionsBackground">#E6E6FA</color>
+    <color name="expense_color">#FF0000</color>
+    <color name="income_color">#3EB489</color>
+    <color name="primaryBorder">#9B9BC4</color>
+    <color name="bottomSheetBackground">#fff</color>
+
+    <color name="Color1">#b71528</color>
+    <color name="Color2">#f83a44</color>
+    <color name="Color3">#ff810a</color>
+    <color name="Color4">#d9c045</color>
+    <color name="Color5">#c4fb0e</color>
+    <color name="Color6">#88d38c</color>
+    <color name="Color7">#0affb6</color>
+    <color name="Color8">#39ecf9</color>
+    <color name="Color9">#29339b</color>
+    <color name="Color10">#b85199</color>
+
 </resources>
