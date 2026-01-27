@@ -16,8 +16,8 @@ import com.group4.expensi.ui.settings.components.DeleteConfirmationDialog
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    settingsViewModel: SettingsViewModel = viewModel()
 ) {
+    val settingsViewModel: SettingsViewModel=viewModel(factory = SettingsViewModel.Factory)
     val uiState by settingsViewModel.uiState.collectAsState()
     Scaffold(
         containerColor=MaterialTheme.colorScheme.background,
@@ -40,14 +40,22 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         )
         {
+//            item {
+//                Text(
+//                    text="Manage how you track and organize your expenses",
+//                    style = MaterialTheme.typography.bodyMedium,
+//                    color = MaterialTheme.colorScheme.onSurfaceVariant
+//                )
+//            }
 
             item {
                 SettingsSection(
                     title = "Categories",
-                    onAddClick = settingsViewModel::onAddCategoryClick
+                    onAddClick = settingsViewModel::onAddCategoryClick,
+                    description = "Group your expenses",
                 ) {
                     uiState.categories.forEach { category ->
                         CategoryItem(
@@ -64,7 +72,8 @@ fun SettingsScreen(
             item {
                 SettingsSection(
                     title = "Payment Modes",
-                    onAddClick = settingsViewModel::onAddPaymentModeClick
+                    onAddClick = settingsViewModel::onAddPaymentModeClick,
+                    description = "All Payment Modes",
                 ) {
                     uiState.paymentModes.forEach { paymentMode ->
                         PaymentModeItem(

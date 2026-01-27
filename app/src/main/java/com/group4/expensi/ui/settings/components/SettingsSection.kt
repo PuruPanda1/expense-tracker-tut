@@ -3,11 +3,52 @@ package com.group4.expensi.ui.settings.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+//@Composable
+//fun SettingsSection(
+//    title: String,
+//    onAddClick: () -> Unit,
+//    content: @Composable ColumnScope.() -> Unit
+//) {
+//    Card(
+//        modifier = Modifier.fillMaxWidth(),
+//        shape = MaterialTheme.shapes.large,
+//        colors = CardDefaults.cardColors(
+//            containerColor = MaterialTheme.colorScheme.surface
+//        ),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+//    ) {
+//        Column(
+//            modifier = Modifier.padding(16.dp),
+//            verticalArrangement = Arrangement.spacedBy(12.dp)
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Text(
+//                    text = title,
+//                    style = MaterialTheme.typography.titleMedium
+//                )
+//
+//                TextButton(onClick = onAddClick) {
+//                    Text("Add", color = MaterialTheme.colorScheme.primary)
+//
+//                }
+//            }
+//
+//            content()
+//        }
+//    }
+//}
+
 @Composable
 fun SettingsSection(
     title: String,
+    description: String,
     onAddClick: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -17,7 +58,7 @@ fun SettingsSection(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -25,20 +66,31 @@ fun SettingsSection(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Column {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
-                TextButton(onClick = onAddClick) {
-                    Text("Add", color = MaterialTheme.colorScheme.primary)
-
+                FilledTonalButton(onClick = onAddClick) {
+                    Text("Add")
                 }
             }
+
+            Divider()
 
             content()
         }
     }
 }
+
+
