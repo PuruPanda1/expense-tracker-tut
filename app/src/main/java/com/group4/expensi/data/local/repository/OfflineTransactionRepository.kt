@@ -4,7 +4,9 @@ import com.group4.expensi.data.local.dao.TransactionDao
 import com.group4.expensi.data.local.entity.Category
 import com.group4.expensi.data.local.entity.PaymentMode
 import com.group4.expensi.data.local.entity.Transaction
+import com.group4.expensi.data.model.CategoryExpense
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class OfflineTransactionRepository(private val transactionDao: TransactionDao) : TransactionRepository {
     override fun getAllTransactionsStream(): Flow<List<Transaction>> {
@@ -66,4 +68,25 @@ class OfflineTransactionRepository(private val transactionDao: TransactionDao) :
     override suspend fun deletePaymentMode(paymentMode: PaymentMode) {
         transactionDao.deletePaymentMode(paymentMode)
     }
+//Dinesh Changes
+    override fun getTotalIncome(): Flow<Double> {
+        return transactionDao.getTotalIncome()
+            .map { it ?: 0.0 }
+    }
+
+    override fun getTotalExpense(): Flow<Double> {
+        return transactionDao.getTotalExpense()
+            .map { it ?: 0.0 }
+    }
+
+    override fun getCurrentMonthTransactions(): Flow<List<Transaction>> {
+        return transactionDao.getCurrentMonthTransactions()
+    }
+
+    override fun getCategoryWiseExpense(): Flow<List<CategoryExpense>> {
+        return transactionDao.getCategoryWiseExpense()
+    }
+
+
+
 }
