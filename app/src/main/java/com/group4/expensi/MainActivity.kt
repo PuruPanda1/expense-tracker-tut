@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.group4.expensi.auth.AuthViewModel
 import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.ui.theme.ExpensiTheme
 import com.group4.expensi.ui.transaction.TransactionViewModel
@@ -32,24 +34,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val authViewModel : AuthViewModel by viewModels()
         setContent {
             ExpensiTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    Greeting(
-//                        name = "Android",
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
-                    AddTransactionScreen(
-                        innerPadding,
-                        viewModel(
-                            factory = TransactionViewModelFactory(
-                                (LocalContext.current.applicationContext
-                                        as ExpensiApplication)
-                                    .container
-                                    .transactionRepository
-                            )
-                        )
-                    )
+                    ExpensiNavigation(modifier = Modifier.padding(innerPadding),authViewModel = authViewModel)
                 }
             }
         }
