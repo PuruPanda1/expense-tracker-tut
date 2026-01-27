@@ -1,10 +1,13 @@
-package com.group4.expensi.ui.pages
+package com.group4.expensi.ui.pages.homePageFragments
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,17 +15,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import com.group4.expensi.auth.AuthState
 import com.group4.expensi.auth.AuthViewModel
 import com.group4.expensi.navigation.ExpensiRoutes
 
 @Composable
-fun HomePage(
-    modifier: Modifier = Modifier,
-    navController: NavHostController,
-    authViewModel: AuthViewModel
-) {
+fun SettingScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel, navController: NavController) {
 
     val authState = authViewModel.authState.observeAsState()
     val context = LocalContext.current
@@ -37,7 +36,9 @@ fun HomePage(
                 ).show()
             }
 
-            is AuthState.UnAuthenticated -> navController.navigate(ExpensiRoutes.LOGIN.route)
+            is AuthState.UnAuthenticated -> navController.navigate(ExpensiRoutes.LOGIN.route){
+                popUpTo(0){inclusive = true}
+            }
             else -> Unit
         }
     }
@@ -51,7 +52,7 @@ fun HomePage(
             authViewModel.signOut()
         }) {
             Text(
-                text = "Log outp"
+                text = "Log out"
             )
         }
     }

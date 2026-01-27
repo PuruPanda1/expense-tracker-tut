@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.group4.expensi.auth.AuthViewModel
-import com.group4.expensi.ui.pages.HomePage
+import com.group4.expensi.ui.pages.MainScreen
 import com.group4.expensi.ui.pages.LoginPage
 import com.group4.expensi.ui.pages.SignUpPage
 
@@ -24,7 +24,7 @@ fun ExpensiNavigation(modifier: Modifier = Modifier, authViewModel: AuthViewMode
         }
 
         composable(ExpensiRoutes.HOME.route){
-            HomePage(modifier, navController,authViewModel)
+            MainScreen(modifier = modifier,rootNavController = navController, authViewModel = authViewModel)
         }
     })
 }
