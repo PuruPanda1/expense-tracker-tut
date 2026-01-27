@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -46,7 +45,7 @@ private fun LoadingState() {
 @Composable
 private fun ErrorState(message: String) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = message, color = Color.Red)
+        Text(text = message, color = MaterialTheme.colorScheme.error)
     }
 }
 
@@ -72,7 +71,8 @@ private fun HomeContent(state: HomeUiState) {
         Text(
             text = "Category-wise Expenses",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -87,7 +87,8 @@ private fun HomeContent(state: HomeUiState) {
         Text(
             text = "Your Transactions",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -137,7 +138,7 @@ private fun SummaryCard(title: String, amount: Double, modifier: Modifier) {
             Modifier.padding(14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(title, color = GrayText)
+            Text(title, color = Color.DarkGray)
             Text(
                 text = "₹ %.2f".format(amount),
                 fontWeight = FontWeight.Bold,
@@ -157,16 +158,17 @@ fun ExpenseDonutChart(
     val totalSpent = data.sumOf { it.total }
 
     if (data.isEmpty() || totalSpent <= 0) {
-        Text("No category expense data available", color = GrayText)
+        Text("No category expense data available", color = Color.DarkGray)
         return
     }
 
+    // 🔥 New vibrant colors
     val colors = listOf(
-        PrimaryBlue,
-        Color(0xFF8E8BE8),
-        Color(0xFFB6B4F2),
-        Color(0xFFD6D5FA),
-        Color(0xFFEAEAFF)
+        Color(0xFF4F46E5), // Indigo
+        Color(0xFF22C55E), // Green
+        Color(0xFFF97316), // Orange
+        Color(0xFFEF4444), // Red
+        Color(0xFF0EA5E9)  // Sky Blue
     )
 
     Box(
@@ -188,7 +190,7 @@ fun ExpenseDonutChart(
                     startAngle = startAngle,
                     sweepAngle = sweepAngle,
                     useCenter = false,
-                    style = Stroke(width = 48f)
+                    style = Stroke(width = 56f)
                 )
 
                 startAngle += sweepAngle
@@ -196,18 +198,28 @@ fun ExpenseDonutChart(
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Total Spent", color = GrayText)
+            Text(
+                "Total Spent",
+                color = Color.DarkGray,
+                style = MaterialTheme.typography.bodyMedium
+            )
             Text(
                 "₹ %.0f".format(totalSpent),
                 fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.Black
             )
-            Spacer(Modifier.height(4.dp))
-            Text("Balance Left", color = GrayText)
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "Balance Left",
+                color = Color.DarkGray,
+                style = MaterialTheme.typography.bodyMedium
+            )
             Text(
                 "₹ %.0f".format(totalBalance),
                 fontWeight = FontWeight.Bold,
-                color = PrimaryBlue
+                color = PrimaryBlue,
+                style = MaterialTheme.typography.titleMedium
             )
         }
     }
@@ -228,7 +240,8 @@ fun ExpenseDonutChart(
                 Spacer(Modifier.width(8.dp))
                 Text(
                     "${item.catTitle} • ${"%.1f".format((item.total / totalSpent) * 100)}%",
-                    color = GrayText
+                    color = Color.DarkGray,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }
@@ -240,7 +253,7 @@ fun ExpenseDonutChart(
 @Composable
 private fun TransactionList(transactions: List<Transaction>) {
     if (transactions.isEmpty()) {
-        Text("No transactions available", color = GrayText)
+        Text("No transactions available", color = Color.DarkGray)
         return
     }
 
@@ -266,7 +279,7 @@ private fun TransactionItem(transaction: Transaction) {
         ) {
             Column {
                 Text(transaction.tTitle, fontWeight = FontWeight.Bold)
-                Text(transaction.tDescription, color = GrayText)
+                Text(transaction.tDescription, color = Color.DarkGray)
             }
             Text(
                 text = if (transaction.tIsExpense)
