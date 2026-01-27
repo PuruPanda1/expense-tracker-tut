@@ -19,15 +19,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.group4.expensi.auth.AuthViewModel
 import com.group4.expensi.data.local.entity.Transaction
+import com.group4.expensi.navigation.ExpensiNavigation
 import com.group4.expensi.ui.theme.ExpensiTheme
 import com.group4.expensi.ui.transaction.TransactionViewModel
-import com.group4.expensi.ui.transaction.TransactionViewModelFactory
 import java.util.Date
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +35,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExpensiTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ExpensiNavigation(modifier = Modifier.padding(innerPadding),authViewModel = authViewModel)
+                    ExpensiNavigation(
+                        modifier = Modifier.padding(innerPadding),
+                        authViewModel = authViewModel
+                    )
                 }
             }
         }

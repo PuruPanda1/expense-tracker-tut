@@ -1,4 +1,4 @@
-package com.group4.expensi
+package com.group4.expensi.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,16 +14,16 @@ import com.group4.expensi.ui.pages.SignUpPage
 fun ExpensiNavigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "signup", builder = {
-        composable("login"){
+    NavHost(navController = navController, startDestination = ExpensiRoutes.LOGIN.route, builder = {
+        composable(ExpensiRoutes.LOGIN.route){
             LoginPage(modifier, navController,authViewModel)
         }
 
-        composable("signup"){
+        composable(ExpensiRoutes.SIGNUP.route){
             SignUpPage(modifier, navController,authViewModel)
         }
 
-        composable("home"){
+        composable(ExpensiRoutes.HOME.route){
             HomePage(modifier, navController,authViewModel)
         }
     })
