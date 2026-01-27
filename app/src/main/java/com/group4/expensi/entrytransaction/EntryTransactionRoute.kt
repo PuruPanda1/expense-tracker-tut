@@ -1,0 +1,55 @@
+package com.group4.expensi.entrytransaction
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.group4.expensi.ui.pages.EntryTransactionScreenUI
+import com.group4.expensi.ui.transaction.TransactionViewModel
+
+@Composable
+fun EntryTransactionRoute(
+    transactionId: Long? = null,
+    viewModel: TransactionViewModel,
+    onBack: () -> Unit
+) {
+    // 1. Observe state
+    val uiState by viewModel.entryUiState.collectAsState()
+    val categories by viewModel.categoryMap.collectAsState()
+    val paymentModes by viewModel.paymentModeMap.collectAsState()
+
+    // 2. Load or reset when screen opens
+    LaunchedEffect(transactionId) {
+        if (transactionId == null) {
+            viewModel.resetEntryState()
+        } else {
+            viewModel.loadTransaction(transactionId)
+        }
+    }
+
+    // 3. Render UI
+    EntryTransactionScreenUI(
+        transactionId = transactionId,
+        amount = uiState.amount,
+        title = uiState.title,
+        description = uiState.description,
+        isExpense = uiState.isExpense,
+        categories = categories.values.toList(),
+        selectedCategory = uiState.selectedCategory,
+        paymentModes = paymentModes.values.toList(),
+        selectedPaymentMode = uiState.selectedPaymentMode,
+        onAmountChange = viewModel::onAmountChange,
+        onTitleChange = viewModel::onTitleChange,
+        onDescriptionChange = viewModel::onDescriptionChange,
+        onExpenseChange = viewModel::onExpenseChange,
+        onCategorySelected = viewModel::onCategorySelected,
+        onPaymentModeSelected = viewModel::onPaymentModeSelected,
+        onSave = {
+            viewModel.saveTransaction(transactionId)
+            onBack()
+        },
+        onBack = onBack,
+        selectedDate = uiState.selectedDate,
+        onDateSelected = viewModel::onDateSelected
+    )
+}
