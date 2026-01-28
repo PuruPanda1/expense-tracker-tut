@@ -1,4 +1,4 @@
-package com.group4.expensi.ui.pages
+package com.group4.expensi.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -10,7 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.group4.expensi.auth.AuthViewModel
 import com.group4.expensi.data.local.ExpensiDatabase
 import com.group4.expensi.data.local.repository.OfflineTransactionRepository
-import com.group4.expensi.ui.pages.HomeViewModel
+import com.group4.expensi.ui.home.HomeViewModel
 import com.group4.expensi.ui.pages.MainScreen
 import com.group4.expensi.ui.pages.LoginPage
 import com.group4.expensi.ui.pages.SignUpPage

@@ -1,4 +1,4 @@
-package com.group4.expensi.ui.pages
+package com.group4.expensi.ui.home
 
 import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.data.model.CategoryExpense

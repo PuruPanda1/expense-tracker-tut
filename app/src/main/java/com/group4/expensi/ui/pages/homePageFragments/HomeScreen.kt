@@ -17,8 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.data.model.CategoryExpense
-import com.group4.expensi.ui.pages.HomeUiState
-import com.group4.expensi.ui.pages.HomeViewModel
+import com.group4.expensi.ui.home.HomeUiState
+import com.group4.expensi.ui.home.HomeViewModel
 import com.group4.expensi.ui.theme.*
 
 @Composable
