@@ -23,18 +23,19 @@ fun AddPaymentModeDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text="Add Payment Mode",
-                style=MaterialTheme.typography.titleLarge
+                text = "Add Payment Mode",
+                style = MaterialTheme.typography.titleLarge
             )
         },
-        text={
+        text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Payment mode name") },
+                    label = { Text("Name") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -58,15 +59,14 @@ fun AddPaymentModeDialog(
         },
         confirmButton = {
             TextButton(
+                enabled = title.isNotBlank(),
                 onClick = {
-                    val balance = balanceText.toFloatOrNull() ?: 0f
-                    if (title.isNotBlank()) {
-                        onAddPaymentMode(
-                            title.trim(),
-                            description.trim(),
-                            balance
-                        )
-                    }
+                    onAddPaymentMode(
+                        title.trim(),
+                        description.trim(),
+                        balanceText.toFloatOrNull() ?: 0f
+                    )
+                    onDismiss()
                 }
             ) {
                 Text("Add")
@@ -79,3 +79,4 @@ fun AddPaymentModeDialog(
         }
     )
 }
+

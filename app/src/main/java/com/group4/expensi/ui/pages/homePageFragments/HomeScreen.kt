@@ -33,9 +33,6 @@ fun HomeScreen(
         else -> HomeContent(uiState)
     }
 }
-
-/* -------------------- STATES -------------------- */
-
 @Composable
 private fun LoadingState() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -49,57 +46,53 @@ private fun ErrorState(message: String) {
         Text(text = message, color = MaterialTheme.colorScheme.error)
     }
 }
-
-/* -------------------- CONTENT -------------------- */
-
 @Composable
 private fun HomeContent(state: HomeUiState) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Background)
-            .padding(16.dp)
+            .background(Background),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        BalanceCard(state.balance)
+        item {
+            BalanceCard(state.balance)
+        }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        item {
+            IncomeExpenseRow(state.totalIncome, state.totalExpense)
+        }
 
-        IncomeExpenseRow(state.totalIncome, state.totalExpense)
+        item {
+            SectionTitle("Category-wise Expenses")
+        }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        item {
+            ExpenseDonutChart(
+                data = state.categoryExpense,
+                totalBalance = state.balance
+            )
+        }
 
-        Text(
-            text = "Category-wise Expenses",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+        item {
+            SectionTitle("Your Transactions")
+        }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        ExpenseDonutChart(
-            data = state.categoryExpense,
-            totalBalance = state.balance
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(
-            text = "Your Transactions",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TransactionList(state.transactions)
+        items(state.transactions) {
+            TransactionItem(it)
+        }
     }
 }
-
-/* -------------------- UI COMPONENTS -------------------- */
-
+@Composable
+private fun SectionTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.onBackground
+    )
+}
 @Composable
 private fun BalanceCard(balance: Double) {
     Card(
@@ -107,8 +100,15 @@ private fun BalanceCard(balance: Double) {
         colors = CardDefaults.cardColors(containerColor = PrimaryBlue),
         shape = RoundedCornerShape(20.dp)
     ) {
-        Column(Modifier.padding(20.dp)) {
-            Text("Total Balance", color = Ivory)
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(
+                "Total Balance",
+                color = Ivory,
+                style = MaterialTheme.typography.bodyMedium
+            )
             Text(
                 text = "₹ %.2f".format(balance),
                 fontWeight = FontWeight.Bold,
@@ -121,7 +121,10 @@ private fun BalanceCard(balance: Double) {
 
 @Composable
 private fun IncomeExpenseRow(income: Double, expense: Double) {
-    Row(Modifier.fillMaxWidth()) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         SummaryCard("Income", income, Modifier.weight(1f))
         SummaryCard("Expense", expense, Modifier.weight(1f))
     }
@@ -130,27 +133,30 @@ private fun IncomeExpenseRow(income: Double, expense: Double) {
 @Composable
 private fun SummaryCard(title: String, amount: Double, modifier: Modifier) {
     Card(
-        modifier = modifier.padding(6.dp),
+        modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = Ivory),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(3.dp)
     ) {
         Column(
-            Modifier.padding(14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(title, color = Color.DarkGray)
+            Text(
+                title,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
             Text(
                 text = "₹ %.2f".format(amount),
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
 }
-
-/* -------------------- DONUT CHART -------------------- */
-
 @Composable
 fun ExpenseDonutChart(
     data: List<CategoryExpense>,
@@ -162,14 +168,12 @@ fun ExpenseDonutChart(
         Text("No category expense data available", color = Color.DarkGray)
         return
     }
-
-    // 🔥 New vibrant colors
     val colors = listOf(
-        Color(0xFF4F46E5), // Indigo
-        Color(0xFF22C55E), // Green
-        Color(0xFFF97316), // Orange
-        Color(0xFFEF4444), // Red
-        Color(0xFF0EA5E9)  // Sky Blue
+        Color(0xFF4F46E5),
+        Color(0xFF22C55E),
+        Color(0xFFF97316),
+        Color(0xFFEF4444),
+        Color(0xFF0EA5E9)
     )
 
     Box(
@@ -249,8 +253,6 @@ fun ExpenseDonutChart(
     }
 }
 
-/* -------------------- TRANSACTIONS -------------------- */
-
 @Composable
 private fun TransactionList(transactions: List<Transaction>) {
     if (transactions.isEmpty()) {
@@ -268,19 +270,28 @@ private fun TransactionList(transactions: List<Transaction>) {
 @Composable
 private fun TransactionItem(transaction: Transaction) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Ivory),
         shape = RoundedCornerShape(14.dp)
     ) {
         Row(
-            Modifier.padding(14.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text(transaction.tTitle, fontWeight = FontWeight.Bold)
-                Text(transaction.tDescription, color = Color.DarkGray)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    transaction.tTitle,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    transaction.tDescription,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             Text(
                 text = if (transaction.tIsExpense)
@@ -288,6 +299,7 @@ private fun TransactionItem(transaction: Transaction) {
                 else
                     "+ ₹%.2f".format(transaction.tAmount),
                 fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyLarge,
                 color = if (transaction.tIsExpense)
                     MaterialTheme.colorScheme.error
                 else

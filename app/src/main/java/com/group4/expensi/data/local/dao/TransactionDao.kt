@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TransactionDao {
 
-    @Query("SELECT * from transactions ORDER BY tDate ASC")
+    @Query("SELECT * from transactions ORDER BY tDate DESC")
     fun getAllTransactions(): Flow<List<Transaction>>
 
     @Query("SELECT * from transactions WHERE tId=:tId")
@@ -88,4 +88,10 @@ interface TransactionDao {
     ORDER BY tDate DESC
 """)
     fun getCurrentMonthTransactions(): Flow<List<Transaction>>
+    @Query("SELECT COUNT(*) FROM categories")
+    suspend fun getCategoryCount(): Int
+
+    @Query("SELECT COUNT(*) FROM payment_modes")
+    suspend fun getPaymentModeCount(): Int
+
 }

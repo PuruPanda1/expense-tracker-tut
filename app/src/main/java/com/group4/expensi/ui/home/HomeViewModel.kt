@@ -14,7 +14,7 @@ class HomeViewModel(
             repository.getTotalIncome(),
             repository.getTotalExpense(),
             repository.getCurrentMonthTransactions(),
-            repository.getCategoryWiseExpense()   // ✅ ADD THIS
+            repository.getCategoryWiseExpense()
         ) { income, expense, transactions, categoryExpense ->
 
             HomeUiState(
@@ -23,7 +23,7 @@ class HomeViewModel(
                 totalExpense = expense,
                 balance = income - expense,
                 transactions = transactions,
-                categoryExpense = categoryExpense   // ✅ PASS IT
+                categoryExpense = categoryExpense
             )
         }.catch { e ->
             emit(HomeUiState(error = e.message))

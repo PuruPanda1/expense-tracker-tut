@@ -27,6 +27,7 @@ abstract class ExpensiDatabase : RoomDatabase(){
                         context,
                         ExpensiDatabase::class.java,
                         "expensi_database")
+                    .addCallback(DatabaseCallback(context))
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }

@@ -12,11 +12,13 @@ fun DeleteConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(title) },
+        title = { Text(title, style = MaterialTheme.typography.titleMedium) },
         text = { Text(message) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("Delete", color = MaterialTheme.colorScheme.error
+                Text(
+                    text = "Delete",
+                    color = MaterialTheme.colorScheme.error
                 )
             }
         },
@@ -27,3 +29,4 @@ fun DeleteConfirmationDialog(
         }
     )
 }
+

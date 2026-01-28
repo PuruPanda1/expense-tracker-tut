@@ -12,7 +12,6 @@ fun AddCategoryDialog(
     onAddCategory: (String) -> Unit
 ) {
     var categoryName by remember { mutableStateOf("") }
-
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -23,7 +22,8 @@ fun AddCategoryDialog(
         },
         text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 OutlinedTextField(
                     value = categoryName,
@@ -36,10 +36,10 @@ fun AddCategoryDialog(
         },
         confirmButton = {
             TextButton(
+                enabled = categoryName.isNotBlank(),
                 onClick = {
-                    if (categoryName.isNotBlank()) {
-                        onAddCategory(categoryName.trim())
-                    }
+                    onAddCategory(categoryName.trim())
+                    onDismiss()
                 }
             ) {
                 Text("Add")
@@ -52,3 +52,4 @@ fun AddCategoryDialog(
         }
     )
 }
+

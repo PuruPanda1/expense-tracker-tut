@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.group4.expensi.ui.components.TopBar
 import com.group4.expensi.ui.settings.components.CategoryItem
 import com.group4.expensi.ui.settings.components.PaymentModeItem
 import com.group4.expensi.ui.settings.components.SettingsSection
@@ -15,65 +16,44 @@ import com.group4.expensi.ui.settings.components.AddPaymentModeDialog
 import com.group4.expensi.ui.settings.components.DeleteConfirmationDialog
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(
-) {
-    val settingsViewModel: SettingsViewModel=viewModel(factory = SettingsViewModel.Factory)
+fun SettingsScreen() {
+    val settingsViewModel: SettingsViewModel =
+        viewModel(factory = SettingsViewModel.Factory)
     val uiState by settingsViewModel.uiState.collectAsState()
     Scaffold(
-        containerColor=MaterialTheme.colorScheme.background,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
-                title={
-                    Text("Settings")
-                } ,
-                colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimary
-            )
-            )
+            TopBar("Settings")
         }
-    ) {
-
-        paddingValues ->
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
+                .padding(paddingValues),
+            contentPadding = PaddingValues(vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
-        )
-        {
-//            item {
-//                Text(
-//                    text="Manage how you track and organize your expenses",
-//                    style = MaterialTheme.typography.bodyMedium,
-//                    color = MaterialTheme.colorScheme.onSurfaceVariant
-//                )
-//            }
-
+        ) {
             item {
                 SettingsSection(
                     title = "Categories",
-                    onAddClick = settingsViewModel::onAddCategoryClick,
                     description = "Group your expenses",
+                    onAddClick = settingsViewModel::onAddCategoryClick
                 ) {
                     uiState.categories.forEach { category ->
                         CategoryItem(
                             title = category.catTitle,
                             onDeleteClick = {
                                 settingsViewModel.onRequestDeleteCategory(category)
-
                             }
                         )
                     }
                 }
             }
-
             item {
                 SettingsSection(
                     title = "Payment Modes",
-                    onAddClick = settingsViewModel::onAddPaymentModeClick,
-                    description = "All Payment Modes",
+                    description = "All payment methods you use",
+                    onAddClick = settingsViewModel::onAddPaymentModeClick
                 ) {
                     uiState.paymentModes.forEach { paymentMode ->
                         PaymentModeItem(
@@ -88,36 +68,33 @@ fun SettingsScreen(
             }
         }
     }
-
     if (uiState.showAddCategoryDialog) {
         AddCategoryDialog(
             onDismiss = settingsViewModel::onDismissDialogs,
             onAddCategory = settingsViewModel::onAddCategory
         )
     }
-
     if (uiState.showAddPaymentModeDialog) {
         AddPaymentModeDialog(
             onDismiss = settingsViewModel::onDismissDialogs,
             onAddPaymentMode = settingsViewModel::onAddPaymentMode
         )
     }
-
     uiState.categoryToDelete?.let { category ->
         DeleteConfirmationDialog(
-            title="Delete Category",
-            message="Are you sure you want to delete '${category.catTitle}'?",
-            onConfirm=settingsViewModel::confirmDeleteCategory,
-            onDismiss=settingsViewModel::cancelDelete
+            title = "Delete Category",
+            message = "Are you sure you want to delete '${category.catTitle}'?",
+            onConfirm = settingsViewModel::confirmDeleteCategory,
+            onDismiss = settingsViewModel::cancelDelete
         )
     }
-
     uiState.paymentModeToDelete?.let { paymentMode ->
         DeleteConfirmationDialog(
-            title="Delete Payment Mode",
-            message="Are you sure you want to delete '${paymentMode.ptTitle}'?",
-            onConfirm=settingsViewModel::confirmDeletePaymentMode,
-            onDismiss=settingsViewModel::cancelDelete
+            title = "Delete Payment Mode",
+            message = "Are you sure you want to delete '${paymentMode.ptTitle}'?",
+            onConfirm = settingsViewModel::confirmDeletePaymentMode,
+            onDismiss = settingsViewModel::cancelDelete
         )
     }
 }
+

@@ -85,7 +85,6 @@ fun TransactionListScreen(
         }
     )
 }
-private val CurveOverlap = 40.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionListContent(
@@ -175,10 +174,11 @@ private fun formatDate(date: Date): String {
 private fun categoryIconRes(iconKey: String?): Int {
     return when (iconKey) {
         "ic_fuel" -> R.drawable.ic_fuel
-        "ic_food" -> R.drawable.ic_fuel
-        "ic_home" -> R.drawable.ic_fuel
-        "ic_salary" -> R.drawable.ic_fuel
-        else -> R.drawable.ic_fuel
+        "ic_food" -> R.drawable.ic_food
+        "ic_home" -> R.drawable.ic_home
+        "ic_salary" -> R.drawable.ic_salary
+        "ic_shopping" -> R.drawable.ic_shopping
+        else -> R.drawable.ic_other
     }
 }
 

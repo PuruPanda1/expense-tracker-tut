@@ -31,7 +31,7 @@ import java.util.Date
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        //enableEdgeToEdge()
         val authViewModel : AuthViewModel by viewModels()
 
         val transactionViewModel : TransactionViewModel by viewModels(
@@ -42,75 +42,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ExpensiTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ExpensiNavigation(
-                        modifier = Modifier.padding(innerPadding),
-                        authViewModel = authViewModel,
-                        transactionViewModel = transactionViewModel
-                    )
-                }
-//                SettingsScreen()
-            }
-        }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Composable
-fun AddTransactionScreen(
-    innerPadding: PaddingValues,
-    viewModel: TransactionViewModel
-) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier.padding(16.dp)
-    ) {
-        TextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Title") }
-        )
-
-        TextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Description") }
-        )
-
-        TextField(
-            value = amount,
-            onValueChange = { amount = it },
-            label = { Text("Amount") }
-        )
-
-        Button(
-            modifier = Modifier.padding(top = 16.dp),
-            onClick = {
-
-                val transaction = Transaction(
-                    tTitle = title,
-                    tDescription = description,
-                    tAmount = amount.toFloatOrNull() ?: 0f,
-                    tDate = Date(),
-                    tIsExpense = true,
-                    tPaymentModeId = 1L,
-                    tCategoryId = 1L
+                ExpensiNavigation(
+                    authViewModel = authViewModel,
+                    transactionViewModel = transactionViewModel
                 )
-
-                viewModel.addTransaction(transaction)
             }
-        ) {
-            Text("Save Transaction")
         }
     }
 }
+
+
