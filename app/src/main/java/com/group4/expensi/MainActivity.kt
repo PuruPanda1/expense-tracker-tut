@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val authViewModel : AuthViewModel by viewModels()
+        val transactionViewModel : TransactionViewModel by viewModels()
 
         setContent {
             ExpensiTheme {
@@ -39,6 +40,7 @@ class MainActivity : ComponentActivity() {
                     ExpensiNavigation(
                         modifier = Modifier.padding(innerPadding),
                         authViewModel = authViewModel,
+                        transactionViewModel = transactionViewModel
                     )
                 }
 //                SettingsScreen()

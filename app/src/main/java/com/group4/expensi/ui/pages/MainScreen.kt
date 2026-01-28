@@ -17,15 +17,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.group4.expensi.auth.AuthViewModel
+import com.group4.expensi.entrytransaction.EntryTransactionRoute
 import com.group4.expensi.navigation.BottomNavigationRoutes
+import com.group4.expensi.navigation.ExpensiRoutes
 import com.group4.expensi.ui.pages.homePageFragments.HomeScreen
-import com.group4.expensi.ui.pages.homePageFragments.TransactionScreen
 import com.group4.expensi.ui.home.HomeViewModel
 import com.group4.expensi.ui.settings.SettingsScreen
 import com.group4.expensi.ui.theme.GrayText
 import com.group4.expensi.ui.theme.Ivory
 import com.group4.expensi.ui.theme.PrimaryBlue
 import com.group4.expensi.ui.theme.TranslucentPrimary
+import com.group4.expensi.ui.transaction.TransactionViewModel
 
 @Composable
 fun MainScreen(
@@ -33,6 +35,7 @@ fun MainScreen(
     authViewModel: AuthViewModel,
     rootNavController: NavHostController,
     homeViewModel: HomeViewModel,
+    transactionViewModel: TransactionViewModel,
 ) {
     val bottomNavController = rememberNavController()
 
@@ -40,7 +43,7 @@ fun MainScreen(
         bottomBar = {
             BottomNavigationBar(navController = bottomNavController)
         }, content = { padding ->
-            NavHostContainer(navController = bottomNavController, padding = padding, authViewModel = authViewModel, rootNavController = rootNavController, homeViewModel = homeViewModel)
+            NavHostContainer(navController = bottomNavController, padding = padding, authViewModel = authViewModel, rootNavController = rootNavController, homeViewModel = homeViewModel, transactionViewModel = transactionViewModel)
         }
     )
 }
@@ -51,7 +54,8 @@ fun NavHostContainer(
     padding: PaddingValues,
     authViewModel: AuthViewModel,
     rootNavController: NavHostController,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    transactionViewModel: TransactionViewModel
 ) {
 
     NavHost(
@@ -67,8 +71,36 @@ fun NavHostContainer(
                 HomeScreen(homeViewModel = homeViewModel)
             }
 
-            composable("transactions") {
-                TransactionScreen()
+            composable("transactions"){
+                TransactionListScreen(
+                    viewModel = transactionViewModel,
+                    onAddClick = {
+                        navController.navigate(ExpensiRoutes.TRANSACTION_ADD.route)
+                    },
+                    onEditClick = { transaction ->
+                        navController.navigate("${ExpensiRoutes.TRANSACTION_EDIT.route}/${transaction.tId}")
+                    },
+                    onBack = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
+            composable(ExpensiRoutes.TRANSACTION_ADD.route) {
+                EntryTransactionRoute (
+                    viewModel = transactionViewModel,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(route = "${ExpensiRoutes.TRANSACTION_EDIT.route}/{transactionId}") { backStackEntry ->
+                val transactionId = backStackEntry.arguments?.getString("transactionId")?.toLong()
+
+                EntryTransactionRoute (
+                    transactionId = transactionId,
+                    viewModel = transactionViewModel,
+                    onBack = { navController.popBackStack() }
+                )
             }
 
             composable("settings") {

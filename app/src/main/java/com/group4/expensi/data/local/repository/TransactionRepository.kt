@@ -16,7 +16,7 @@ interface TransactionRepository {
     suspend fun updateTransaction(transaction: Transaction)
 
     suspend fun deleteTransaction(transaction: Transaction)
-
+    suspend fun getTransactionById(tId: Long): Transaction
 
     fun getAllCategoryStream(): Flow<List<Category>>
 

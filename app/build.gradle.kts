@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.expensi"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -73,8 +73,6 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
     implementation(libs.androidx.compose.runtime.livedata)
-//    implementation(libs.androidx.navigation.compose)
-//    implementation(libs.androidx.navigation.compose.jvmstubs)
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
@@ -97,5 +95,7 @@ dependencies {
     val nav_version = "2.9.6"
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    implementation("androidx.compose.material:material")
 
 }

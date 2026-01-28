@@ -14,12 +14,10 @@ import com.group4.expensi.ui.home.HomeViewModel
 import com.group4.expensi.ui.pages.MainScreen
 import com.group4.expensi.ui.pages.LoginPage
 import com.group4.expensi.ui.pages.SignUpPage
+import com.group4.expensi.ui.transaction.TransactionViewModel
 
 @Composable
-fun ExpensiNavigation(
-    modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel,
-) {
+fun ExpensiNavigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel, transactionViewModel: TransactionViewModel) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
@@ -43,7 +41,8 @@ fun ExpensiNavigation(
         }
 
         composable(ExpensiRoutes.HOME.route){
-            MainScreen(modifier = modifier,rootNavController = navController, authViewModel = authViewModel, homeViewModel = homeViewModel)
+            MainScreen(modifier = modifier,rootNavController = navController, authViewModel = authViewModel, homeViewModel = homeViewModel, transactionViewModel = transactionViewModel)
         }
+
     })
 }

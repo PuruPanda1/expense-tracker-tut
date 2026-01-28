@@ -7,6 +7,7 @@ import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.data.model.CategoryExpense
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 
 class OfflineTransactionRepository(private val transactionDao: TransactionDao) : TransactionRepository {
     override fun getAllTransactionsStream(): Flow<List<Transaction>> {
@@ -27,6 +28,10 @@ class OfflineTransactionRepository(private val transactionDao: TransactionDao) :
 
     override suspend fun deleteTransaction(transaction: Transaction) {
         transactionDao.deleteTransaction(transaction)
+    }
+
+    override suspend fun getTransactionById(tId: Long): Transaction {
+        return transactionDao.getTransaction(tId).first()
     }
 
     override fun getAllCategoryStream(): Flow<List<Category>> {
