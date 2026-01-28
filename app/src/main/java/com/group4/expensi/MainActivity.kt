@@ -25,6 +25,7 @@ import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.navigation.ExpensiNavigation
 import com.group4.expensi.ui.theme.ExpensiTheme
 import com.group4.expensi.ui.transaction.TransactionViewModel
+import com.group4.expensi.ui.transaction.TransactionViewModelFactory
 import java.util.Date
 
 class MainActivity : ComponentActivity() {
@@ -32,7 +33,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val authViewModel : AuthViewModel by viewModels()
-        val transactionViewModel : TransactionViewModel by viewModels()
+
+        val transactionViewModel : TransactionViewModel by viewModels(
+            factoryProducer = { TransactionViewModelFactory(
+                (this.applicationContext as ExpensiApplication).container.transactionRepository
+            ) }
+        )
 
         setContent {
             ExpensiTheme {
