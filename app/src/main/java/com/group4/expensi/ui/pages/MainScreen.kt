@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,7 +19,6 @@ import androidx.navigation.compose.rememberNavController
 import com.group4.expensi.auth.AuthViewModel
 import com.group4.expensi.navigation.BottomNavigationRoutes
 import com.group4.expensi.ui.pages.homePageFragments.HomeScreen
-import com.group4.expensi.ui.pages.homePageFragments.SettingScreen
 import com.group4.expensi.ui.pages.homePageFragments.TransactionScreen
 import com.group4.expensi.ui.settings.SettingsScreen
 import com.group4.expensi.ui.theme.GrayText
@@ -33,6 +31,7 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel,
     rootNavController: NavHostController,
+    homeViewModel: HomeViewModel,
 ) {
     val bottomNavController = rememberNavController()
 
@@ -40,7 +39,7 @@ fun MainScreen(
         bottomBar = {
             BottomNavigationBar(navController = bottomNavController)
         }, content = { padding ->
-            NavHostContainer(navController = bottomNavController, padding = padding, authViewModel = authViewModel, rootNavController = rootNavController)
+            NavHostContainer(navController = bottomNavController, padding = padding, authViewModel = authViewModel, rootNavController = rootNavController, homeViewModel = homeViewModel)
         }
     )
 }
@@ -50,7 +49,8 @@ fun NavHostContainer(
     navController: NavHostController,
     padding: PaddingValues,
     authViewModel: AuthViewModel,
-    rootNavController: NavHostController
+    rootNavController: NavHostController,
+    homeViewModel: HomeViewModel
 ) {
 
     NavHost(
@@ -63,7 +63,7 @@ fun NavHostContainer(
         builder = {
 
             composable("home") {
-                HomeScreen()
+                HomeScreen(homeViewModel = homeViewModel)
             }
 
             composable("transactions") {

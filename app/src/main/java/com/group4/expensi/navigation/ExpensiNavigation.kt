@@ -1,18 +1,37 @@
 package com.group4.expensi.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.group4.expensi.auth.AuthViewModel
+import com.group4.expensi.data.local.ExpensiDatabase
+import com.group4.expensi.data.local.repository.OfflineTransactionRepository
+import com.group4.expensi.ui.pages.HomeViewModel
 import com.group4.expensi.ui.pages.MainScreen
 import com.group4.expensi.ui.pages.LoginPage
 import com.group4.expensi.ui.pages.SignUpPage
 
 @Composable
-fun ExpensiNavigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
+fun ExpensiNavigation(
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel,
+) {
     val navController = rememberNavController()
+    val context = LocalContext.current
+
+    val repository = remember {
+        OfflineTransactionRepository(
+            ExpensiDatabase.getDatabase(context).transactionDao()
+        )
+    }
+
+    val homeViewModel = remember {
+        HomeViewModel(repository)
+    }
 
     NavHost(navController = navController, startDestination = ExpensiRoutes.LOGIN.route, builder = {
         composable(ExpensiRoutes.LOGIN.route){
@@ -24,7 +43,7 @@ fun ExpensiNavigation(modifier: Modifier = Modifier, authViewModel: AuthViewMode
         }
 
         composable(ExpensiRoutes.HOME.route){
-            MainScreen(modifier = modifier,rootNavController = navController, authViewModel = authViewModel)
+            MainScreen(modifier = modifier,rootNavController = navController, authViewModel = authViewModel, homeViewModel = homeViewModel)
         }
     })
 }

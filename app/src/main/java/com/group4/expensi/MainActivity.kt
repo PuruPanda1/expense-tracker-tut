@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.group4.expensi.auth.AuthViewModel
 import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.navigation.ExpensiNavigation
-import com.group4.expensi.ui.settings.SettingsScreen
+import com.group4.expensi.ui.pages.HomeViewModel
 import com.group4.expensi.ui.theme.ExpensiTheme
 import com.group4.expensi.ui.transaction.TransactionViewModel
 import java.util.Date
@@ -33,12 +33,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val authViewModel : AuthViewModel by viewModels()
+
         setContent {
             ExpensiTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ExpensiNavigation(
                         modifier = Modifier.padding(innerPadding),
-                        authViewModel = authViewModel
+                        authViewModel = authViewModel,
                     )
                 }
 //                SettingsScreen()

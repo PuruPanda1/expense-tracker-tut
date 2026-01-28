@@ -3,6 +3,7 @@ package com.group4.expensi.data.local.repository
 import com.group4.expensi.data.local.entity.Category
 import com.group4.expensi.data.local.entity.PaymentMode
 import com.group4.expensi.data.local.entity.Transaction
+import com.group4.expensi.data.model.CategoryExpense
 import kotlinx.coroutines.flow.Flow
 
 interface TransactionRepository {
@@ -37,4 +38,11 @@ interface TransactionRepository {
     suspend fun updatePaymentMode(paymentMode: PaymentMode)
 
     suspend fun deletePaymentMode(paymentMode: PaymentMode)
+
+    fun getTotalIncome(): Flow<Double>
+    fun getTotalExpense(): Flow<Double>
+    fun getCurrentMonthTransactions(): Flow<List<Transaction>>
+    fun getCategoryWiseExpense(): Flow<List<CategoryExpense>>
+
+
 }
