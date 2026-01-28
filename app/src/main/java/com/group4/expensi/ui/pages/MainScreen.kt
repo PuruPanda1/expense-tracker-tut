@@ -22,6 +22,7 @@ import com.group4.expensi.navigation.BottomNavigationRoutes
 import com.group4.expensi.ui.pages.homePageFragments.HomeScreen
 import com.group4.expensi.ui.pages.homePageFragments.SettingScreen
 import com.group4.expensi.ui.pages.homePageFragments.TransactionScreen
+import com.group4.expensi.ui.settings.SettingsScreen
 import com.group4.expensi.ui.theme.GrayText
 import com.group4.expensi.ui.theme.Ivory
 import com.group4.expensi.ui.theme.PrimaryBlue
@@ -70,7 +71,8 @@ fun NavHostContainer(
             }
 
             composable("settings") {
-                SettingScreen(modifier = Modifier, authViewModel = authViewModel, navController = rootNavController)
+//                SettingScreen(modifier = Modifier, authViewModel = authViewModel, navController = rootNavController)
+                SettingsScreen()
             }
         })
 }
