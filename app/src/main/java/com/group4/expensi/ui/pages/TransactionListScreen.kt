@@ -19,13 +19,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.AlertDialog
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissState
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.SwipeToDismiss
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -33,6 +32,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -99,7 +99,9 @@ fun TransactionListContent(
         topBar = { TopBar(title = "Transactions") },
         floatingActionButton = {
 
-            FloatingActionButton(onClick = onAddTransaction) {
+            FloatingActionButton(onClick = onAddTransaction,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add Transaction"
@@ -121,7 +123,6 @@ fun TransactionListContent(
                 )
             }
         } else {
-            val topInset = paddingValues.calculateTopPadding()
             LazyColumn(
                 modifier = Modifier
                     .padding(paddingValues),
@@ -143,12 +144,11 @@ fun TransactionListContent(
 }
 
 @Composable
-fun MetaChip(
-    text: String
-) {
+fun MetaChip(text: String) {
     Surface(
         shape = MaterialTheme.shapes.small,
         tonalElevation = 1.dp,
+        color = MaterialTheme.colorScheme.surfaceVariant,
         border = BorderStroke(
             width = 0.5.dp,
             color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
@@ -159,6 +159,7 @@ fun MetaChip(
             style = MaterialTheme.typography.labelSmall.copy(
                 letterSpacing = 0.5.sp
             ),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(
                 horizontal = 8.dp,
                 vertical = 3.dp
@@ -193,8 +194,12 @@ fun TransactionCardContent(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp)
-    ) {
+            .padding(vertical = 6.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -212,7 +217,8 @@ fun TransactionCardContent(
                         id = categoryIconRes(category?.catIconUrl)
                     ),
                     contentDescription = category?.catTitle ?: "Category",
-                    modifier = Modifier.size(22.dp)
+                    modifier = Modifier.size(22.dp),
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
 
             }
@@ -252,7 +258,7 @@ fun TransactionCardContent(
                     MaterialTheme.colorScheme.primary
                 }
                 Text(
-                    text = "$sign ₹ ${transaction.tAmount}",
+                    text = "$sign ₹ %.2f".format(transaction.tAmount),
                     style = MaterialTheme.typography.titleMedium,
                     color = amountColor
                 )

@@ -126,15 +126,12 @@ fun NavHostContainer(
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
-
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     NavigationBar(
-        containerColor = PrimaryBlue,
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
         tonalElevation = 8.dp
     ) {
-
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-
         BottomNavigationRoutes.bottomNavigationItems.forEach { navItem ->
 
             val selected = currentRoute == navItem.route
@@ -161,13 +158,13 @@ fun BottomNavigationBar(navController: NavHostController) {
                             modifier = Modifier.size(22.dp)
                         )
                         if (selected) {
-                            Spacer(modifier = Modifier.height(2.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
                             Box(
                                 modifier = Modifier
                                     .height(3.dp)
                                     .width(18.dp)
                                     .clip(RoundedCornerShape(50))
-                                    .background(Ivory)
+                                    .background(MaterialTheme.colorScheme.primary)
                             )
                         }
                     }
@@ -180,10 +177,10 @@ fun BottomNavigationBar(navController: NavHostController) {
                 },
                 alwaysShowLabel = false,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Ivory,
-                    unselectedIconColor = GrayText,
-                    selectedTextColor = Ivory,
-                    unselectedTextColor = GrayText,
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     indicatorColor = Color.Transparent
                 )
             )
