@@ -1,12 +1,21 @@
 package com.group4.expensi.ui.settings
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.group4.expensi.auth.AuthState
+import com.group4.expensi.auth.AuthViewModel
+import com.group4.expensi.navigation.ExpensiRoutes
 import com.group4.expensi.ui.components.TopBar
 import com.group4.expensi.ui.settings.components.CategoryItem
 import com.group4.expensi.ui.settings.components.PaymentModeItem
@@ -16,14 +25,49 @@ import com.group4.expensi.ui.settings.components.AddPaymentModeDialog
 import com.group4.expensi.ui.settings.components.DeleteConfirmationDialog
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(authViewModel: AuthViewModel, navController: NavController) {
     val settingsViewModel: SettingsViewModel =
         viewModel(factory = SettingsViewModel.Factory)
     val uiState by settingsViewModel.uiState.collectAsState()
+
+    val authState = authViewModel.authState.observeAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(authState.value) {
+        when (authState.value) {
+            is AuthState.Error -> {
+                Toast.makeText(
+                    context,
+                    (authState.value as AuthState.Error).message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            is AuthState.UnAuthenticated -> navController.navigate(ExpensiRoutes.LOGIN.route){
+                popUpTo(0){inclusive = true}
+            }
+            else -> Unit
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopBar("Settings")
+            TopAppBar(
+                title = {
+                    Text("Settings")
+                },
+                actions = {
+                    IconButton(
+                        onClick = { authViewModel.signOut() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ExitToApp,
+                            contentDescription = "Logout"
+                        )
+                    }
+                }
+            )
         }
     ) { paddingValues ->
         LazyColumn(

@@ -119,7 +119,7 @@ fun NavHostContainer(
 
             composable("settings") {
 //                SettingScreen(modifier = Modifier, authViewModel = authViewModel, navController = rootNavController)
-                SettingsScreen()
+                SettingsScreen(authViewModel = authViewModel, navController = rootNavController)
             }
         })
 }
