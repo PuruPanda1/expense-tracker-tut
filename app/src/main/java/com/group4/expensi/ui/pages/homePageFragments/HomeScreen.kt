@@ -51,7 +51,7 @@ private fun HomeContent(state: HomeUiState) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Background),
+            .background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -106,14 +106,14 @@ private fun BalanceCard(balance: Double) {
         ) {
             Text(
                 "Total Balance",
-                color = Ivory,
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
                 text = "₹ %.2f".format(balance),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.headlineMedium,
-                color = Ivory
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }
@@ -134,7 +134,7 @@ private fun IncomeExpenseRow(income: Double, expense: Double) {
 private fun SummaryCard(title: String, amount: Double, modifier: Modifier) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = Ivory),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(3.dp)
     ) {
@@ -165,7 +165,7 @@ fun ExpenseDonutChart(
     val totalSpent = data.sumOf { it.total }
 
     if (data.isEmpty() || totalSpent <= 0) {
-        Text("No category expense data available", color = Color.DarkGray)
+        Text("No category expense data available", color = MaterialTheme.colorScheme.onSurfaceVariant)
         return
     }
     val colors = listOf(
@@ -179,11 +179,11 @@ fun ExpenseDonutChart(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(260.dp),
+            .aspectRatio(1f),
         contentAlignment = Alignment.Center
     ) {
 
-        Canvas(modifier = Modifier.fillMaxSize()) {
+        Canvas(modifier = Modifier.fillMaxSize().padding(24.dp)) {
             var startAngle = -90f
 
             data.forEachIndexed { index, item ->
@@ -205,19 +205,19 @@ fun ExpenseDonutChart(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 "Total Spent",
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha =0.8f),
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
                 "₹ %.0f".format(totalSpent),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(Modifier.height(6.dp))
             Text(
                 "Balance Left",
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
@@ -245,7 +245,7 @@ fun ExpenseDonutChart(
                 Spacer(Modifier.width(8.dp))
                 Text(
                     "${item.catTitle} • ${"%.1f".format((item.total / totalSpent) * 100)}%",
-                    color = Color.DarkGray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -256,7 +256,7 @@ fun ExpenseDonutChart(
 @Composable
 private fun TransactionList(transactions: List<Transaction>) {
     if (transactions.isEmpty()) {
-        Text("No transactions available", color = Color.DarkGray)
+        Text("No transactions available", color = MaterialTheme.colorScheme.onSurfaceVariant)
         return
     }
 
@@ -271,7 +271,7 @@ private fun TransactionList(transactions: List<Transaction>) {
 private fun TransactionItem(transaction: Transaction) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Ivory),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(14.dp)
     ) {
         Row(
@@ -290,7 +290,7 @@ private fun TransactionItem(transaction: Transaction) {
                 Text(
                     transaction.tDescription,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             Text(
