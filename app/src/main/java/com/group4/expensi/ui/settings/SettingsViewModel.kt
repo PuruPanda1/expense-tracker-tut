@@ -8,11 +8,13 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.group4.expensi.ExpensiApplication
 import com.group4.expensi.data.local.entity.Category
 import com.group4.expensi.data.local.entity.PaymentMode
+import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.data.local.repository.TransactionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class SettingsViewModel(
     private val repository: TransactionRepository
@@ -74,7 +76,7 @@ class SettingsViewModel(
         startingBalance: Float
     ) {
         viewModelScope.launch {
-            repository.insertPaymentMode(
+            val paymentModeId = repository.insertPaymentMode(
                 PaymentMode(
                     ptId = 0,
                     ptTitle = title,
@@ -83,6 +85,20 @@ class SettingsViewModel(
                     ptIconUrl = ""
                 )
             )
+            if (startingBalance > 0f) {
+                repository.insertTransaction(
+                    Transaction(
+                        tId = 0,
+                        tTitle = "Opening Balance",
+                        tDescription = "Initial balance for $title",
+                        tAmount = startingBalance,
+                        tDate = Date(),
+                        tIsExpense = false,
+                        tCategoryId = -1L,
+                        tPaymentModeId = paymentModeId
+                    )
+                )
+            }
             _uiState.value = _uiState.value.copy(showAddPaymentModeDialog = false)
         }
     }
