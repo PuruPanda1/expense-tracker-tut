@@ -1,5 +1,8 @@
 package com.group4.expensi.auth
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +18,27 @@ class AuthViewModel : ViewModel(){
         checkAuthStatus()
     }
 
+    var email by mutableStateOf("")
+        private set
+
+    var password by mutableStateOf("")
+        private set
+
+    var cnfPassword by mutableStateOf("")
+        private set
+
+    fun onEmailChange(value: String) {
+        email = value
+    }
+
+    fun onPasswordChange(value: String) {
+        password = value
+    }
+
+    fun onCnfPasswordChange(value: String) {
+        cnfPassword = value
+    }
+
     fun checkAuthStatus(){
         if(auth.currentUser==null){
             _authState.value = AuthState.UnAuthenticated
@@ -23,7 +47,7 @@ class AuthViewModel : ViewModel(){
         }
     }
 
-    fun login(email: String, password: String){
+    fun login(){
 
         if(email.isEmpty() || password.isEmpty()){
             _authState.value = AuthState.Error("Email and password can not be empty")
@@ -41,7 +65,7 @@ class AuthViewModel : ViewModel(){
             }
     }
 
-    fun signup(email: String, password: String, cnfPassword: String){
+    fun signup(){
 
         if(email.isEmpty() || password.isEmpty()){
             _authState.value = AuthState.Error("Email and password can not be empty")

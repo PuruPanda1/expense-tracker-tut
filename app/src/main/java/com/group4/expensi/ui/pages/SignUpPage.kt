@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,9 @@ import com.example.expensi.R
 import com.group4.expensi.auth.AuthState
 import com.group4.expensi.auth.AuthViewModel
 import com.group4.expensi.navigation.ExpensiRoutes
+import com.group4.expensi.utils.isFormValid
+import com.group4.expensi.utils.isValidEmail
+import com.group4.expensi.utils.validatePassword
 
 @Composable
 fun SignUpPage(
@@ -42,11 +46,13 @@ fun SignUpPage(
     navController: NavHostController,
     authViewModel: AuthViewModel
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var cnfPassword by remember { mutableStateOf("") }
     val authState = authViewModel.authState.observeAsState()
     val context = LocalContext.current
+
+    var emailError by rememberSaveable { mutableStateOf<String?>(null) }
+    var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
+    var cnfPasswordError by rememberSaveable { mutableStateOf<String?>(null) }
+
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Error -> {
@@ -89,39 +95,68 @@ fun SignUpPage(
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = authViewModel.email,
+                onValueChange = {
+                    authViewModel.onEmailChange(it)
+                    emailError = if (isValidEmail(it)) null else "Invalid email address"
+                },
                 label = { Text("Email") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                isError = emailError != null,
+                supportingText = {
+                    emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                },
+                modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text(stringResource(R.string.password)) },
+                value = authViewModel.password,
+                onValueChange = {
+                    authViewModel.onPasswordChange(it)
+                    passwordError = validatePassword(it)
+                },
+                label = { Text("Password") },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                isError = passwordError != null,
+                supportingText = {
+                    passwordError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                },
+                modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
-                value = cnfPassword,
-                onValueChange = { cnfPassword = it },
-                label = { Text(stringResource(R.string.confirm_password)) },
+                value = authViewModel.cnfPassword,
+                onValueChange = {
+                    authViewModel.onCnfPasswordChange(it)
+                    cnfPasswordError =     if (authViewModel.cnfPassword.isNotEmpty() &&
+                        authViewModel.password != it
+                    ) "Passwords do not match" else null
+                },
+                label = { Text("Confirm Password") },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                isError = cnfPasswordError != null,
+                supportingText = {
+                    cnfPasswordError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                },
+                modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Button(
-                onClick = {
-                    authViewModel.signup(email, password, cnfPassword)
-                },
+                onClick = { authViewModel.signup() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                enabled = isFormValid(
+                    authViewModel.email,
+                    authViewModel.password,
+                    emailError,
+                    passwordError,
+                    cnfPasswordError
+                )
+
             ) {
-                Text(stringResource(R.string.create_account))
+                Text("Sign Up")
             }
             TextButton(
                 onClick = {

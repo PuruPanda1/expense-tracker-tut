@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +37,9 @@ import com.group4.expensi.auth.AuthState
 import com.group4.expensi.auth.AuthViewModel
 import com.group4.expensi.navigation.ExpensiRoutes
 import com.group4.expensi.ui.components.TopBar
+import com.group4.expensi.utils.isFormValid
+import com.group4.expensi.utils.isValidEmail
+import com.group4.expensi.utils.validatePassword
 
 @Composable
 fun LoginPage(
@@ -43,11 +47,12 @@ fun LoginPage(
     navController: NavHostController,
     authViewModel: AuthViewModel
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
 
     val authState = authViewModel.authState.observeAsState()
     val context = LocalContext.current
+
+    var emailError by rememberSaveable { mutableStateOf<String?>(null) }
+    var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
 
     LaunchedEffect(authState.value) {
         when (authState.value) {
@@ -95,27 +100,48 @@ fun LoginPage(
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = authViewModel.email,
+                onValueChange = {
+                    authViewModel.onEmailChange(it)
+                    emailError = if (isValidEmail(it)) null else "Invalid email address"
+                                },
                 label = { Text("Email") },
                 singleLine = true,
+                isError = emailError != null,
+                supportingText = {
+                    emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                },
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = authViewModel.password,
+                onValueChange = {
+                    authViewModel.onPasswordChange(it)
+                    passwordError = validatePassword(it)
+                                },
                 label = { Text("Password") },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
+                isError = passwordError != null,
+                supportingText = {
+                    passwordError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                },
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Button(
-                onClick = { authViewModel.login(email, password) },
+                onClick = { authViewModel.login() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                enabled = isFormValid(
+                    authViewModel.email,
+                    authViewModel.password,
+                    emailError,
+                    passwordError,
+                    null
+                )
             ) {
                 Text("Login")
             }
@@ -126,7 +152,7 @@ fun LoginPage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
             ) {
                 Text("Login using Phone number")
             }
@@ -142,3 +168,4 @@ fun LoginPage(
 private fun navigateToSignupPage(navController: NavHostController) {
     navController.navigate(ExpensiRoutes.SIGNUP.route)
 }
+
