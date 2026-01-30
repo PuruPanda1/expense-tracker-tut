@@ -119,6 +119,17 @@ fun LoginPage(
             ) {
                 Text("Login")
             }
+            Button(
+                onClick = {
+                    navController.navigate(ExpensiRoutes.PHONE_LOGIN.route)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Login using Phone number")
+            }
             TextButton(
                 onClick = { navigateToSignupPage(navController) },
                 modifier = Modifier.align(Alignment.CenterHorizontally)

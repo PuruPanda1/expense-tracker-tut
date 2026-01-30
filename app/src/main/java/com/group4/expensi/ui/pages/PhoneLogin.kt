@@ -146,14 +146,26 @@ fun PhoneLogin(modifier: Modifier = Modifier,
             ) {
                 Text("Send OTP")
             }
+            Button(
+                onClick = {
+                    navController.navigate(ExpensiRoutes.LOGIN.route)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Login using Email")
+            }
             TextButton(
-                onClick = { navigateToSignupPage(navController) },
+                onClick = {
+                    navController.navigate(ExpensiRoutes.SIGNUP.route)
+                },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(stringResource(R.string.don_t_have_an_account_sign_up))
+                Text(stringResource(R.string.don_t_have_an_account_signup))
             }
         }
     }
 }
 
-private fun navigateToSignupPage(navController: NavHostController) {}

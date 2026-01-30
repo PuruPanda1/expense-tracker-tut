@@ -33,7 +33,7 @@ fun ExpensiNavigation(modifier: Modifier = Modifier, authViewModel: AuthViewMode
         HomeViewModel(repository)
     }
 
-    NavHost(navController = navController, startDestination = ExpensiRoutes.PHONE_LOGIN.route, builder = {
+    NavHost(navController = navController, startDestination = ExpensiRoutes.LOGIN.route, builder = {
         composable(ExpensiRoutes.LOGIN.route){
             LoginPage(modifier, navController,authViewModel)
         }
