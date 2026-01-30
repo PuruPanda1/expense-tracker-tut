@@ -13,6 +13,8 @@ import com.group4.expensi.data.local.repository.OfflineTransactionRepository
 import com.group4.expensi.ui.home.HomeViewModel
 import com.group4.expensi.ui.pages.MainScreen
 import com.group4.expensi.ui.pages.LoginPage
+import com.group4.expensi.ui.pages.OTPScreen
+import com.group4.expensi.ui.pages.PhoneLogin
 import com.group4.expensi.ui.pages.SignUpPage
 import com.group4.expensi.ui.transaction.TransactionViewModel
 
@@ -31,13 +33,21 @@ fun ExpensiNavigation(modifier: Modifier = Modifier, authViewModel: AuthViewMode
         HomeViewModel(repository)
     }
 
-    NavHost(navController = navController, startDestination = ExpensiRoutes.LOGIN.route, builder = {
+    NavHost(navController = navController, startDestination = ExpensiRoutes.PHONE_LOGIN.route, builder = {
         composable(ExpensiRoutes.LOGIN.route){
             LoginPage(modifier, navController,authViewModel)
         }
 
         composable(ExpensiRoutes.SIGNUP.route){
             SignUpPage(modifier, navController,authViewModel)
+        }
+
+        composable(ExpensiRoutes.PHONE_LOGIN.route){
+            PhoneLogin(modifier, authViewModel = authViewModel,navController = navController)
+        }
+
+        composable(ExpensiRoutes.OTP.route){
+            OTPScreen(modifier, authViewModel = authViewModel,navController = navController)
         }
 
         composable(ExpensiRoutes.HOME.route){

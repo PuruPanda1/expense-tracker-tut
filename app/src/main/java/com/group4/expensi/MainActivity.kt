@@ -20,6 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.group4.expensi.auth.AuthViewModel
 import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.navigation.ExpensiNavigation
@@ -39,7 +42,11 @@ class MainActivity : ComponentActivity() {
                 (this.applicationContext as ExpensiApplication).container.transactionRepository
             ) }
         )
-
+        FirebaseApp.initializeApp(this)
+        val firebaseAppCheck = FirebaseAppCheck.getInstance()
+        firebaseAppCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
         setContent {
             ExpensiTheme {
                 ExpensiNavigation(

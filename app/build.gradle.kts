@@ -68,12 +68,13 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation(libs.firebase.auth)
+//    implementation(libs.firebase.auth)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.ui)
+//    implementation(libs.firebase.appcheck.ktx)
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
@@ -98,5 +99,15 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
     implementation("androidx.compose.material:material")
+
+    // OTP Authentication
+//    implementation ("com.google.android.gms:play-services-auth:20.7.0")
+//    implementation ("com.google.android.gms:play-services-auth-api-phone")
+
+    implementation (platform("com.google.firebase:firebase-bom:32.7.0"))
+
+    implementation ("com.google.firebase:firebase-auth")
+    implementation ("com.google.firebase:firebase-appcheck")
+    implementation ("com.google.firebase:firebase-appcheck-playintegrity")
 
 }

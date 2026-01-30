@@ -8,6 +8,7 @@
     <string name="don_t_have_an_account_signup">Don\'t have an account? Signup</string>
     <string name="welcome_back">Welcome back !!!</string>
     <string name="login_in_to_continue">Login in to continue</string>
+    <string name="enter_number">Enter number to send OTP</string>
     <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign up</string>
     <string name="already_have_an_account_login">Already have an account? Login</string>
     <string name="create_account">Create Account</string>
