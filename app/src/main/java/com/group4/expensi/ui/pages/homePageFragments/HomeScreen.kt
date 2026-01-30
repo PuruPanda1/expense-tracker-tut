@@ -173,7 +173,7 @@ fun ExpenseDonutChart(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(260.dp),
+            .aspectRatio(1f),
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
