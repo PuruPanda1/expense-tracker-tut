@@ -18,7 +18,16 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
 
     private val _uiState = MutableStateFlow(TransactionUiState())
     val uiState : StateFlow<TransactionUiState> = _uiState.asStateFlow()
-
+    private var intitalized = false
+    fun initEntry(transactionId: Long?) {
+        if (intitalized) return
+        if (transactionId == null) {
+            resetEntryState()
+        } else{
+            loadTransaction(transactionId)
+        }
+        intitalized = true
+    }
 
     init {
         viewModelScope.launch {
@@ -119,7 +128,7 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
                 tAmount = state.amount.toFloatOrNull() ?: 0f,
                 tDate = state.selectedDate,
                 tIsExpense = state.isExpense,
-                tCategoryId = state.selectedCategory?.catId ?: 1L,
+                tCategoryId = state.selectedCategory?.catId ?: -1L,
                 tPaymentModeId = state.selectedPaymentMode?.ptId ?: 1L
             )
 
