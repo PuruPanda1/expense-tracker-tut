@@ -296,8 +296,7 @@ fun TitleInput(title: String, onTitleChange: (String) -> Unit) {
                 imageVector = Icons.Default.Edit,
                 contentDescription = null
             )
-        },
-        shape = RoundedCornerShape(12.dp)
+        }
     )
 }
 @Composable
@@ -307,8 +306,7 @@ fun DescriptionInput(description: String, onDescriptionChange: (String) -> Unit)
         onValueChange = onDescriptionChange,
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text("Add a note (optional)") },
-        maxLines = 2,
-        shape = RoundedCornerShape(12.dp)
+        maxLines = 2
     )
 }
 
@@ -333,8 +331,7 @@ fun CategoryDropdown(
             readOnly = true,
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded)
-            },
-            shape = RoundedCornerShape(12.dp)
+            }
         )
         ExposedDropdownMenu(
             expanded = expanded,
