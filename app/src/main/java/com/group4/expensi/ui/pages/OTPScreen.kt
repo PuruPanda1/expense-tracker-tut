@@ -3,7 +3,9 @@ package com.group4.expensi.ui.pages
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,6 +28,7 @@ fun OTPScreen(
 ) {
     val context = LocalContext.current
     var otp by remember { mutableStateOf("") }
+    val scrollState = rememberScrollState()
 
     // Get verificationId from previous screen
     val verificationId =
@@ -46,7 +49,9 @@ fun OTPScreen(
                 .padding(24.dp)
                 .clip(RoundedCornerShape(20.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                .padding(24.dp),
+                .padding(24.dp)
+                .verticalScroll(scrollState)
+                .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
