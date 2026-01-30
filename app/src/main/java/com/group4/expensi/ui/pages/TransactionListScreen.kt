@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -40,6 +41,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -56,7 +58,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.expensi.R
@@ -107,27 +108,22 @@ fun TransactionListContent(
     uiState: TransactionUiState,
     viewModel : TransactionViewModel
 ) {
+    var showFilterSheet by rememberSaveable { mutableStateOf(false) }
+    if (showFilterSheet) {
+        FilterBottomSheet(
+            uiState = uiState,
+            categoryMap = categoryMap,
+            paymentModeMap = paymentModeMap,
+            onSortChange = viewModel::onSortTypeChanged,
+            onCategoryChange = viewModel::onCategoryFilterSelected,
+            onPaymentChange = viewModel::onPaymentModeFilterSelected,
+            onDismiss = { showFilterSheet = false }
+        )
+    }
     Scaffold(
         topBar = { TopBar(title = "Transactions") },
-        floatingActionButton = {
-
-            FloatingActionButton(onClick = onAddTransaction,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Transaction"
-                )
-            }
-        }
     ) { paddingValues ->
-        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            FilterRow(
-                uiState = uiState,
-                viewModel = viewModel,
-                categoryMap = categoryMap,
-                paymentModeMap = paymentModeMap
-            )
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             if (transactions.isEmpty()) {
                 Box(
                     modifier = Modifier
@@ -166,6 +162,32 @@ fun TransactionListContent(
                     }
                 }
             }
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)) {
+                FloatingActionButton(
+                    onClick = { showFilterSheet = true },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.align(Alignment.BottomStart)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Tune,
+                        contentDescription = "Filter"
+                    )
+                }
+                FloatingActionButton(
+                    onClick = onAddTransaction,
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add Transaction"
+                    )
+                }
+            }
         }
     }
 }
@@ -196,7 +218,9 @@ fun <T> FilterDropdown(
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded)
             },
-            modifier = modifier.menuAnchor().fillMaxWidth()
+            modifier = modifier
+                .menuAnchor()
+                .fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -223,54 +247,72 @@ fun <T> FilterDropdown(
         }
     }
 }
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterRow(uiState: TransactionUiState, viewModel : TransactionViewModel,
-              categoryMap: Map<Long, Category>, paymentModeMap: Map<Long, PaymentMode>,) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+fun FilterBottomSheet(
+    uiState: TransactionUiState,
+    categoryMap: Map<Long, Category>,
+    paymentModeMap: Map<Long, PaymentMode>,
+    onSortChange: (SortType) -> Unit,
+    onCategoryChange: (Long?) -> Unit,
+    onPaymentChange: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss
     ) {
-        FilterDropdown(
-            label = "Sort",
-            selected = uiState.sortType,
-            options = SortType.entries,
-            optionLabel = {
-                when (it) {
-                    SortType.DATE_DESC -> "Newest"
-                    SortType.DATE_ASC -> "Oldest"
-                    SortType.AMOUNT_DESC -> "Amount (High → Low)"
-                    SortType.AMOUNT_ASC -> "Amount (Low → High)"
-                }
-            },
-            onSelect = {
-                viewModel.onSortTypeChanged(it ?: SortType.DATE_DESC)
-            },
-            modifier = Modifier.weight(1f),
-            allowAll = false
-        )
-        FilterDropdown(
-            label = "Category",
-            selected = uiState.selectedCategoryId,
-            options = categoryMap.keys.toList(),
-            optionLabel = { id ->
-                if (id == -1L) "Unknown"
-                else categoryMap[id]?.catTitle ?: "Unknown"
-            },
-            onSelect = { viewModel.onCategoryFilterSelected(it) },
-            modifier = Modifier.weight(1f)
-        )
-        FilterDropdown(
-            label = "Payment",
-            selected = uiState.selectedPaymentModeId,
-            options = paymentModeMap.keys.toList(),
-            optionLabel = { id ->
-                paymentModeMap[id]?.ptTitle ?: "Unknown"
-            },
-            onSelect = { viewModel.onPaymentModeFilterSelected(it) },
-            modifier = Modifier.weight(1f)
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Filters",
+                style = MaterialTheme.typography.titleMedium
+            )
+            FilterDropdown(
+                label = "Sort by",
+                selected = uiState.sortType,
+                options = SortType.entries,
+                optionLabel = {
+                    when (it) {
+                        SortType.DATE_DESC -> "Date (Newest)"
+                        SortType.DATE_ASC -> "Date (Oldest)"
+                        SortType.AMOUNT_DESC -> "Amount (High → Low)"
+                        SortType.AMOUNT_ASC -> "Amount (Low → High)"
+                    }
+                },
+                onSelect = { onSortChange(it ?: SortType.DATE_DESC) },
+                allowAll = false
+            )
+            FilterDropdown(
+                label = "Category",
+                selected = uiState.selectedCategoryId,
+                options = categoryMap.keys.toList(),
+                optionLabel = { id ->
+                    if (id == -1L) "Unknown"
+                    else categoryMap[id]?.catTitle ?: "Unknown"
+                },
+                onSelect = onCategoryChange
+            )
+            FilterDropdown(
+                label = "Payment mode",
+                selected = uiState.selectedPaymentModeId,
+                options = paymentModeMap.keys.toList(),
+                optionLabel = { id ->
+                    paymentModeMap[id]?.ptTitle ?: "Unknown"
+                },
+                onSelect = onPaymentChange
+            )
+            Spacer(Modifier.height(8.dp))
+            Button(
+                onClick = onDismiss,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Done")
+            }
+        }
     }
 }
 @Composable
