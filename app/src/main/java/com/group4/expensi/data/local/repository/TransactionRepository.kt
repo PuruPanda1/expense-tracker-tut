@@ -33,7 +33,7 @@ interface TransactionRepository {
 
     fun getPaymentModeStream(tId: Long): Flow<PaymentMode?>
 
-    suspend fun insertPaymentMode(paymentMode: PaymentMode)
+    suspend fun insertPaymentMode(paymentMode: PaymentMode): Long
 
     suspend fun updatePaymentMode(paymentMode: PaymentMode)
 

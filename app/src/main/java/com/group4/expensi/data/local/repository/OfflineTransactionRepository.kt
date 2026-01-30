@@ -62,8 +62,8 @@ class OfflineTransactionRepository(private val transactionDao: TransactionDao) :
        return transactionDao.getPaymentMode(ptId)
     }
 
-    override suspend fun insertPaymentMode(paymentMode: PaymentMode) {
-        transactionDao.insertPaymentMode(paymentMode)
+    override suspend fun insertPaymentMode(paymentMode: PaymentMode): Long {
+        return transactionDao.insertPaymentMode(paymentMode)
     }
 
     override suspend fun updatePaymentMode(paymentMode: PaymentMode) {

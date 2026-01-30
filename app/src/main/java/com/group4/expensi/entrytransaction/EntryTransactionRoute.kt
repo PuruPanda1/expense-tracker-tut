@@ -13,12 +13,9 @@ fun EntryTransactionRoute(
     viewModel: TransactionViewModel,
     onBack: () -> Unit
 ) {
-    // 1. Observe state
     val uiState by viewModel.entryUiState.collectAsState()
     val categories by viewModel.categoryMap.collectAsState()
     val paymentModes by viewModel.paymentModeMap.collectAsState()
-
-    // 2. Load or reset when screen opens
     LaunchedEffect(transactionId) {
         if (transactionId == null) {
             viewModel.resetEntryState()
@@ -26,8 +23,6 @@ fun EntryTransactionRoute(
             viewModel.loadTransaction(transactionId)
         }
     }
-
-    // 3. Render UI
     EntryTransactionScreenUI(
         transactionId = transactionId,
         amount = uiState.amount,

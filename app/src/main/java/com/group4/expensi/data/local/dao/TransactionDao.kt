@@ -51,7 +51,7 @@ interface TransactionDao {
     fun getPaymentMode(ptId: Long): Flow<PaymentMode>
 
     @Insert
-    suspend fun insertPaymentMode(paymentMode: PaymentMode)
+    suspend fun insertPaymentMode(paymentMode: PaymentMode): Long
 
     @Update
     suspend fun updatePaymentMode(paymentMode: PaymentMode)
