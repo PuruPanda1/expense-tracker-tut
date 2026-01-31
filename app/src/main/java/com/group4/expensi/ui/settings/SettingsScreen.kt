@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -33,6 +34,8 @@ fun SettingsScreen(authViewModel: AuthViewModel, navController: NavController) {
     val authState = authViewModel.authState.observeAsState()
     val context = LocalContext.current
 
+    var expanded by remember { mutableStateOf(false) }
+
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Error -> {
@@ -57,16 +60,34 @@ fun SettingsScreen(authViewModel: AuthViewModel, navController: NavController) {
                 title = {
                     Text("Settings")
                 },
-                actions = {
-                    IconButton(
-                        onClick = { authViewModel.signOut() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ExitToApp,
-                            contentDescription = "Logout"
-                        )
-                    }
+
+            actions = {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More options"
+                    )
                 }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Logout") },
+                        onClick = {
+                            expanded = false
+                            authViewModel.signOut()
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.ExitToApp,
+                                contentDescription = "Logout"
+                            )
+                        }
+                    )
+                }
+            }
             )
         }
     ) { paddingValues ->
