@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -45,6 +47,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +56,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import com.group4.expensi.data.local.entity.Category
 import com.group4.expensi.data.local.entity.PaymentMode
 import com.group4.expensi.ui.components.TopBar
@@ -87,7 +91,7 @@ fun EntryTransactionScreenUI(
     onDateSelected: (Date) -> Unit,
 ) {
     val screenTitle = if (transactionId == null) "Add Transaction" else "Edit Transaction"
-    var showDatePicker by remember { mutableStateOf(false) }
+    var showDatePicker by rememberSaveable { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = selectedDate.time,
         selectableDates = PastOrTodaySelectableDates
@@ -171,7 +175,7 @@ fun EntryTransactionContent(
     val canSave = validate(amount, title, selectedCategory, selectedPaymentMode)
     Column(
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxSize().verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp)
     ) {
         Card(
@@ -244,12 +248,18 @@ fun AmountInput(
 
         BasicTextField(
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = {
+                input -> val validInput = input.filter { it.isDigit() || it == '.' }.let {
+                    if (it.count{c-> c=='.'}<=1) it else value
+            }
+                onValueChange(validInput)
+            },
             singleLine = true,
             textStyle = MaterialTheme.typography.displaySmall.copy(
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Start
             ),
+            maxLines = 1,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             modifier = Modifier.width(IntrinsicSize.Min),
@@ -286,8 +296,7 @@ fun TitleInput(title: String, onTitleChange: (String) -> Unit) {
                 imageVector = Icons.Default.Edit,
                 contentDescription = null
             )
-        },
-        shape = RoundedCornerShape(12.dp)
+        }
     )
 }
 @Composable
@@ -297,8 +306,7 @@ fun DescriptionInput(description: String, onDescriptionChange: (String) -> Unit)
         onValueChange = onDescriptionChange,
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text("Add a note (optional)") },
-        maxLines = 2,
-        shape = RoundedCornerShape(12.dp)
+        maxLines = 2
     )
 }
 
@@ -323,8 +331,7 @@ fun CategoryDropdown(
             readOnly = true,
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded)
-            },
-            shape = RoundedCornerShape(12.dp)
+            }
         )
         ExposedDropdownMenu(
             expanded = expanded,
@@ -487,8 +494,7 @@ fun validate(
     selectedPaymentMode: PaymentMode?
 ) = amount.isNotBlank() &&
         amount.toFloatOrNull()?.let { it > 0f } == true &&
-        title.isNotBlank() &&
-        selectedCategory != null && selectedPaymentMode != null
+        title.isNotBlank()
 @OptIn(ExperimentalMaterial3Api::class)
 private object PastOrTodaySelectableDates : SelectableDates {
     override fun isSelectableDate(utcTimeMillis: Long): Boolean {
@@ -498,8 +504,9 @@ private object PastOrTodaySelectableDates : SelectableDates {
                 .toLocalDate()
 
         val today = LocalDate.now()
+        val currentMonth = LocalDate.now().withDayOfMonth(1)
 
-        return !selectedDate.isAfter(today)
+        return !selectedDate.isAfter(today) && !selectedDate.isBefore(currentMonth)
     }
 }
 

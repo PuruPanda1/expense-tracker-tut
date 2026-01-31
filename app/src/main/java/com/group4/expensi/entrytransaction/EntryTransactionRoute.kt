@@ -17,11 +17,7 @@ fun EntryTransactionRoute(
     val categories by viewModel.categoryMap.collectAsState()
     val paymentModes by viewModel.paymentModeMap.collectAsState()
     LaunchedEffect(transactionId) {
-        if (transactionId == null) {
-            viewModel.resetEntryState()
-        } else {
-            viewModel.loadTransaction(transactionId)
-        }
+       viewModel.initEntry(transactionId)
     }
     EntryTransactionScreenUI(
         transactionId = transactionId,

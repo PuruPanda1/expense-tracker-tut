@@ -1,5 +1,6 @@
 package com.group4.expensi.ui.transaction
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.group4.expensi.data.local.entity.Category
@@ -13,21 +14,73 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
+import kotlin.Long
+import kotlin.collections.Map
+import kotlin.collections.emptyMap
 
 class TransactionViewModel(private val transactionRepository: TransactionRepository) : ViewModel(){
 
     private val _uiState = MutableStateFlow(TransactionUiState())
     val uiState : StateFlow<TransactionUiState> = _uiState.asStateFlow()
+    private val allTransactions = MutableStateFlow<List<Transaction>>(emptyList())
+    private var currentEditingId: Long? = null
+    fun initEntry(transactionId: Long?) {
+        if (currentEditingId == transactionId) return
+        currentEditingId = transactionId
 
+        if (transactionId == null) {
+            resetEntryState()
+        } else {
+            loadTransaction(transactionId)
+        }
+    }
 
+    private fun applyFilters() {
+        val state = _uiState.value
+        var filtered = allTransactions.value
+        state.selectedCategoryId?.let {
+            catId -> filtered = filtered.filter { it.tCategoryId == catId }
+        }
+        state.selectedPaymentModeId?.let { ptId ->
+            filtered = filtered.filter { it.tPaymentModeId == ptId }
+        }
+        filtered = when(state.sortType) {
+            SortType.DATE_DESC -> filtered.sortedByDescending { it.tDate }
+            SortType.DATE_ASC -> filtered.sortedBy { it.tDate }
+            SortType.AMOUNT_DESC -> filtered.sortedByDescending { it.tAmount }
+            SortType.AMOUNT_ASC -> filtered.sortedBy { it.tAmount }
+        }
+        val limit = state.currentLimit
+        val paged = filtered.take(limit)
+        _uiState.update {
+            it.copy(
+                transactions = paged,
+                isEndReached = paged.size >= filtered.size
+            )
+        }
+    }
+    fun loadNextPage() {
+        _uiState.update {
+            if (it.isEndReached) it
+            else it.copy(currentLimit = it.currentLimit + it.pageSize)
+        }
+        applyFilters()
+    }
+    private fun resetPagination() {
+        _uiState.update {
+            it.copy(
+                currentLimit = it.pageSize,
+                isEndReached = false
+            )
+        }
+    }
     init {
         viewModelScope.launch {
             transactionRepository
                 .getAllTransactionsStream()
                 .collect { list ->
-                    _uiState.update {
-                        it.copy(transactions = list)
-                    }
+                    allTransactions.value = list
+                    applyFilters()
                 }
         }
         viewModelScope.launch {
@@ -51,6 +104,28 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
             transactionRepository.insertTransaction(transaction)
         }
     }
+    fun onCategoryFilterSelected(categoryId: Long?) {
+        resetPagination()
+        _uiState.update {
+            it.copy(selectedCategoryId = categoryId)
+        }
+        applyFilters()
+    }
+    fun onPaymentModeFilterSelected(paymentModeId: Long?) {
+        resetPagination()
+        _uiState.update {
+            it.copy(selectedPaymentModeId = paymentModeId)
+        }
+        applyFilters()
+    }
+    fun onSortTypeChanged(sortType: SortType) {
+        resetPagination()
+        _uiState.update {
+            it.copy(sortType = sortType)
+        }
+        applyFilters()
+    }
+
 
     fun deleteTransaction(transaction: Transaction){
         viewModelScope.launch {
@@ -119,7 +194,7 @@ class TransactionViewModel(private val transactionRepository: TransactionReposit
                 tAmount = state.amount.toFloatOrNull() ?: 0f,
                 tDate = state.selectedDate,
                 tIsExpense = state.isExpense,
-                tCategoryId = state.selectedCategory?.catId ?: 1L,
+                tCategoryId = state.selectedCategory?.catId ?: -1L,
                 tPaymentModeId = state.selectedPaymentMode?.ptId ?: 1L
             )
 

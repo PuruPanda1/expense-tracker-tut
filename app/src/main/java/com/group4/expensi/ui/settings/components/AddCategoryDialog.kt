@@ -3,6 +3,7 @@ package com.group4.expensi.ui.settings.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -11,7 +12,7 @@ fun AddCategoryDialog(
     onDismiss: () -> Unit,
     onAddCategory: (String) -> Unit
 ) {
-    var categoryName by remember { mutableStateOf("") }
+    var categoryName by rememberSaveable { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {

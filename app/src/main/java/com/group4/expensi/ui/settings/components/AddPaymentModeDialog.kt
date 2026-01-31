@@ -3,6 +3,7 @@ package com.group4.expensi.ui.settings.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -15,9 +16,9 @@ fun AddPaymentModeDialog(
         startingBalance: Float
     ) -> Unit
 ) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var balanceText by remember { mutableStateOf("") }
+    var title by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var balanceText by rememberSaveable { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismiss,

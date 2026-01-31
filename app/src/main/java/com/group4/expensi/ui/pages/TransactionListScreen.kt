@@ -29,28 +29,35 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.expensi.R
@@ -58,6 +65,8 @@ import com.group4.expensi.data.local.entity.Category
 import com.group4.expensi.data.local.entity.PaymentMode
 import com.group4.expensi.data.local.entity.Transaction
 import com.group4.expensi.ui.components.TopBar
+import com.group4.expensi.ui.transaction.SortType
+import com.group4.expensi.ui.transaction.TransactionUiState
 import com.group4.expensi.ui.transaction.TransactionViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -82,7 +91,9 @@ fun TransactionListScreen(
         onEditTransaction = onEditClick,
         onDeleteTransaction = { transaction ->
             viewModel.deleteTransaction(transaction)
-        }
+        },
+        uiState = uiState,
+        viewModel = viewModel
     )
 }
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,55 +104,236 @@ fun TransactionListContent(
     categoryMap: Map<Long, Category>,
     paymentModeMap: Map<Long, PaymentMode>,
     onDeleteTransaction: (Transaction) -> Unit,
-    onEditTransaction: (Transaction) -> Unit
+    onEditTransaction: (Transaction) -> Unit,
+    uiState: TransactionUiState,
+    viewModel : TransactionViewModel
 ) {
+    var showFilterSheet by rememberSaveable { mutableStateOf(false) }
+    if (showFilterSheet) {
+        FilterBottomSheet(
+            uiState = uiState,
+            categoryMap = categoryMap,
+            paymentModeMap = paymentModeMap,
+            onSortChange = viewModel::onSortTypeChanged,
+            onCategoryChange = viewModel::onCategoryFilterSelected,
+            onPaymentChange = viewModel::onPaymentModeFilterSelected,
+            onDismiss = { showFilterSheet = false }
+        )
+    }
     Scaffold(
         topBar = { TopBar(title = "Transactions") },
-        floatingActionButton = {
-
-            FloatingActionButton(onClick = onAddTransaction,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Transaction"
-                )
-            }
-        }
     ) { paddingValues ->
-        if (transactions.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(32.dp).offset(y = (-16).dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No transactions yet",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            if (transactions.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(32.dp)
+                        .offset(y = (-16).dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No transactions yet",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier,
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(transactions) { transaction ->
+                        SwipeableTransactionItem(
+                            transaction = transaction,
+                            category = categoryMap[transaction.tCategoryId],
+                            paymentMode = paymentModeMap[transaction.tPaymentModeId],
+                            onEdit = { onEditTransaction(transaction) },
+                            onDelete = { onDeleteTransaction(transaction) }
+                        )
+                    }
+                    item {
+                        if (!uiState.isEndReached) {
+                            LoadMoreFooter(
+                                onClick = { viewModel.loadNextPage() }
+                            )
+                        }
+                    }
+                }
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(transactions) { transaction ->
-                    SwipeableTransactionItem(
-                        transaction = transaction,
-                        category = categoryMap[transaction.tCategoryId],
-                        paymentMode = paymentModeMap[transaction.tPaymentModeId],
-                        onEdit = { onEditTransaction(transaction) },
-                        onDelete = { onDeleteTransaction(transaction) }
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)) {
+                FloatingActionButton(
+                    onClick = { showFilterSheet = true },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.align(Alignment.BottomStart)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Tune,
+                        contentDescription = "Filter"
+                    )
+                }
+                FloatingActionButton(
+                    onClick = onAddTransaction,
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add Transaction"
                     )
                 }
             }
         }
     }
 }
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun <T> FilterDropdown(
+    label: String,
+    selected: T?,
+    options: List<T>,
+    optionLabel: (T) -> String,
+    onSelect: (T?) -> Unit,
+    modifier: Modifier = Modifier,
+    allowAll: Boolean = true
+) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded=!expanded},
+        modifier = modifier
+    ) {
+        TextField(
+            value = selected?.let(optionLabel)?:"All",
+            onValueChange = {},
+            singleLine = true,
+            maxLines = 1,
+            readOnly = true,
+            label = {Text(label)},
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+            },
+            modifier = modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {expanded=false}
+        ) {
+            if (allowAll){
+                DropdownMenuItem(
+                    text = {Text("All")},
+                    onClick = {
+                        onSelect(null)
+                        expanded=false
+                    }
+                )
+            }
+            options.forEach {
+                option-> DropdownMenuItem(
+                    text = {Text(optionLabel(option))},
+                    onClick = {
+                        onSelect(option)
+                        expanded=false
+                    }
+                )
+            }
+        }
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FilterBottomSheet(
+    uiState: TransactionUiState,
+    categoryMap: Map<Long, Category>,
+    paymentModeMap: Map<Long, PaymentMode>,
+    onSortChange: (SortType) -> Unit,
+    onCategoryChange: (Long?) -> Unit,
+    onPaymentChange: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Filters",
+                style = MaterialTheme.typography.titleMedium
+            )
+            FilterDropdown(
+                label = "Sort by",
+                selected = uiState.sortType,
+                options = SortType.entries,
+                optionLabel = {
+                    when (it) {
+                        SortType.DATE_DESC -> "Date (Newest)"
+                        SortType.DATE_ASC -> "Date (Oldest)"
+                        SortType.AMOUNT_DESC -> "Amount (High → Low)"
+                        SortType.AMOUNT_ASC -> "Amount (Low → High)"
+                    }
+                },
+                onSelect = { onSortChange(it ?: SortType.DATE_DESC) },
+                allowAll = false
+            )
+            FilterDropdown(
+                label = "Category",
+                selected = uiState.selectedCategoryId,
+                options = categoryMap.keys.toList(),
+                optionLabel = { id ->
+                    if (id == -1L) "Unknown"
+                    else categoryMap[id]?.catTitle ?: "Unknown"
+                },
+                onSelect = onCategoryChange
+            )
+            FilterDropdown(
+                label = "Payment mode",
+                selected = uiState.selectedPaymentModeId,
+                options = paymentModeMap.keys.toList(),
+                optionLabel = { id ->
+                    paymentModeMap[id]?.ptTitle ?: "Unknown"
+                },
+                onSelect = onPaymentChange
+            )
+            Spacer(Modifier.height(8.dp))
+            Button(
+                onClick = onDismiss,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Done")
+            }
+        }
+    }
+}
+@Composable
+fun LoadMoreFooter(
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        OutlinedButton(
+            onClick = onClick,
+            shape = MaterialTheme.shapes.medium
+        ) {
+            Text("Load more")
+        }
+    }
+}
+
 
 @Composable
 fun MetaChip(text: String) {
@@ -350,41 +542,4 @@ fun SwipeableTransactionItem(
             }
         )
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun TransactionListContentPreview() {
-    val sampleData = listOf(
-        Transaction(
-            tId = 1L,
-            tTitle = "Groceries",
-            tDescription = "Vegetables & fruits",
-            tAmount = 450f,
-            tDate = Date(),
-            tIsExpense = true,
-            tPaymentModeId = 1L,
-            tCategoryId = 9
-        ),
-        Transaction(
-            tId = 2L,
-            tTitle = "Salary",
-            tDescription = "February salary",
-            tAmount = 30000f,
-            tDate = Date(),
-            tIsExpense = false,
-            tPaymentModeId = 1L,
-            tCategoryId = 9
-        )
-    )
-
-    TransactionListContent(
-        transactions = sampleData,
-        onAddTransaction = {},
-        categoryMap = emptyMap(),
-        paymentModeMap = emptyMap(),
-        onDeleteTransaction = TODO(),
-        onEditTransaction = TODO(),
-    )
 }
