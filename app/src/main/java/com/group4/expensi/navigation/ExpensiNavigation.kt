@@ -11,15 +11,20 @@ import com.group4.expensi.auth.AuthViewModel
 import com.group4.expensi.data.local.ExpensiDatabase
 import com.group4.expensi.data.local.repository.OfflineTransactionRepository
 import com.group4.expensi.ui.home.HomeViewModel
-import com.group4.expensi.ui.pages.MainScreen
 import com.group4.expensi.ui.pages.LoginPage
+import com.group4.expensi.ui.pages.MainScreen
 import com.group4.expensi.ui.pages.OTPScreen
 import com.group4.expensi.ui.pages.PhoneLogin
 import com.group4.expensi.ui.pages.SignUpPage
+import com.group4.expensi.ui.pages.homePageFragments.OnboardingScreen
 import com.group4.expensi.ui.transaction.TransactionViewModel
 
 @Composable
-fun ExpensiNavigation(modifier: Modifier = Modifier, authViewModel: AuthViewModel, transactionViewModel: TransactionViewModel) {
+fun ExpensiNavigation(
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel,
+    transactionViewModel: TransactionViewModel
+) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
@@ -33,26 +38,49 @@ fun ExpensiNavigation(modifier: Modifier = Modifier, authViewModel: AuthViewMode
         HomeViewModel(repository)
     }
 
-    NavHost(navController = navController, startDestination = ExpensiRoutes.LOGIN.route, builder = {
-        composable(ExpensiRoutes.LOGIN.route){
-            LoginPage(modifier, navController,authViewModel)
+    NavHost(
+        navController = navController,
+        startDestination = ExpensiRoutes.ONBOARDING.route
+    ) {
+        composable(ExpensiRoutes.ONBOARDING.route) {
+            OnboardingScreen(
+                onFinish = {
+                    navController.navigate(ExpensiRoutes.LOGIN.route) {
+                        popUpTo(ExpensiRoutes.ONBOARDING.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
         }
-
-        composable(ExpensiRoutes.SIGNUP.route){
-            SignUpPage(modifier, navController,authViewModel)
+        composable(ExpensiRoutes.LOGIN.route) {
+            LoginPage(modifier, navController, authViewModel)
         }
-
-        composable(ExpensiRoutes.PHONE_LOGIN.route){
-            PhoneLogin(modifier, authViewModel = authViewModel,navController = navController)
+        composable(ExpensiRoutes.SIGNUP.route) {
+            SignUpPage(modifier, navController, authViewModel)
         }
-
-        composable(ExpensiRoutes.OTP.route){
-            OTPScreen(modifier, authViewModel = authViewModel,navController = navController)
+        composable(ExpensiRoutes.PHONE_LOGIN.route) {
+            PhoneLogin(
+                modifier = modifier,
+                authViewModel = authViewModel,
+                navController = navController
+            )
         }
-
-        composable(ExpensiRoutes.HOME.route){
-            MainScreen(modifier = modifier,rootNavController = navController, authViewModel = authViewModel, homeViewModel = homeViewModel, transactionViewModel = transactionViewModel)
+        composable(ExpensiRoutes.OTP.route) {
+            OTPScreen(
+                modifier = modifier,
+                authViewModel = authViewModel,
+                navController = navController
+            )
         }
-
-    })
+        composable(ExpensiRoutes.HOME.route) {
+            MainScreen(
+                modifier = modifier,
+                rootNavController = navController,
+                authViewModel = authViewModel,
+                homeViewModel = homeViewModel,
+                transactionViewModel = transactionViewModel
+            )
+        }
+    }
 }
