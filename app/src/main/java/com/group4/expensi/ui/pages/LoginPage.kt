@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.expensi.R
@@ -182,7 +183,9 @@ fun LoginPage(
                     }
                 },
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation =
+                    if (passwordVisible) VisualTransformation.None
+                    else PasswordVisualTransformation(),
                 isError = passwordError != null,
                 supportingText = {
                     passwordError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
@@ -238,7 +241,11 @@ fun LoginPage(
                 Text("Login using Phone number")
             }
             TextButton(
-                onClick = { navigateToSignupPage(navController) },
+                onClick = {
+                    authViewModel.onPasswordChange("")
+                    authViewModel.onCnfPasswordChange("")
+                    navigateToSignupPage(navController)
+                          },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text(stringResource(R.string.don_t_have_an_account_sign_up),  color = PrimaryBlue)
