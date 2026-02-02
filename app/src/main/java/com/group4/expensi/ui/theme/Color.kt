@@ -15,3 +15,11 @@ val TranslucentPrimary = Color(0x205F5BC8)
 val GrayText = Color(0xFFB4B8C1)
 val Ivory = Color(0xFFFFFFF0)
 val Background = Color(0xFFF8F9FD)
+
+val White = Color(0xFFFFFFFF)
+val Black = Color(0xFF000000)
+
+val OffWhite = Color(0xFFF5F5F5)
+
+val DarkPrimary = Color(0xFF3F3BA8)   // darker blue for borders
+val OnPrimary = Color(0xFFFFFFFF)    // text on primary buttons

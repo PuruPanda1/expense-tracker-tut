@@ -17,6 +17,7 @@ import com.group4.expensi.ui.pages.OTPScreen
 import com.group4.expensi.ui.pages.PhoneLogin
 import com.group4.expensi.ui.pages.SignUpPage
 import com.group4.expensi.ui.pages.homePageFragments.OnboardingScreen
+import com.group4.expensi.ui.pages.welcomeScreen.WelcomeScreen
 import com.group4.expensi.ui.transaction.TransactionViewModel
 
 @Composable
@@ -45,13 +46,16 @@ fun ExpensiNavigation(
         composable(ExpensiRoutes.ONBOARDING.route) {
             OnboardingScreen(
                 onFinish = {
-                    navController.navigate(ExpensiRoutes.LOGIN.route) {
+                    navController.navigate(ExpensiRoutes.WELCOME.route) {
                         popUpTo(ExpensiRoutes.ONBOARDING.route) {
                             inclusive = true
                         }
                     }
                 }
             )
+        }
+        composable(ExpensiRoutes.WELCOME.route) {
+            WelcomeScreen(modifier, navController, authViewModel)
         }
         composable(ExpensiRoutes.LOGIN.route) {
             LoginPage(modifier, navController, authViewModel)
