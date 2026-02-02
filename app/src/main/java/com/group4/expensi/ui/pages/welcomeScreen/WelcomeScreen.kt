@@ -27,9 +27,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.group4.expensi.auth.AuthState
-import com.group4.expensi.auth.AuthViewModel
-import com.group4.expensi.navigation.ExpensiRoutes
+import com.group4.expensi.viewModel.auth.AuthState
+import com.group4.expensi.viewModel.auth.AuthViewModel
+import com.group4.expensi.navigation.expensiAppNavigation.ExpensiRoutes
 import com.group4.expensi.ui.pages.welcomeScreen.components.TopScreenAnimation
 import com.group4.expensi.ui.theme.Black
 import com.group4.expensi.ui.theme.DarkPrimary
