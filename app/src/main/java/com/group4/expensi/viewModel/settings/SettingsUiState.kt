@@ -11,5 +11,11 @@ data class SettingsUiState(
     val showAddPaymentModeDialog: Boolean = false,
 
     val categoryToDelete: Category? = null,
-    val paymentModeToDelete: PaymentMode? = null
+    val paymentModeToDelete: PaymentMode? = null,
+
+    val categoryBeingEdited: Category? = null,
+    val paymentModeBeingEdited: PaymentMode? = null,
+
+    val nameError: String? = null,
+    val balanceError: String? = null
 )

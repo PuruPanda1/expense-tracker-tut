@@ -50,48 +50,76 @@ class SettingsViewModel(
         _uiState.value = _uiState.value.copy(showAddPaymentModeDialog = true)
     }
 
-    fun onDismissDialogs() {
+    fun onDismissDialogs(){
         _uiState.value = _uiState.value.copy(
             showAddCategoryDialog = false,
-            showAddPaymentModeDialog = false
+            showAddPaymentModeDialog = false,
+            categoryBeingEdited = null,
+            paymentModeBeingEdited = null,
+            nameError = null
         )
     }
 
+
     fun onAddCategory(name: String){
+        val trimmedName=name.trim()
+        if (isDuplicateCategoryName(trimmedName)){
+            _uiState.value=_uiState.value.copy(
+                nameError = "Category already exists"
+            )
+            return
+        }
+
         viewModelScope.launch {
             repository.insertCategory(
                 Category(
-                    catId = 0,
-                    catTitle = name,
+                    catId=0,
+                    catTitle=trimmedName,//** name
                     catIconUrl = ""
+
                 )
             )
-            _uiState.value = _uiState.value.copy(showAddCategoryDialog = false)
+            _uiState.value = _uiState.value.copy(showAddCategoryDialog = false,  nameError = null)
         }
     }
 
     fun onAddPaymentMode(
         title: String,
         description: String,
-        startingBalance: Float
+        startingBalanceText: String
     ) {
+
+        val trimmedTitle=title.trim()
+        if (isDuplicatePaymentModeName(trimmedTitle)){
+            _uiState.value=_uiState.value.copy(
+                nameError="Payment mode already exists"
+            )
+            return
+        }
+        val balance=validateStartingBalance(startingBalanceText)
+        if (balance==null) {
+            _uiState.value=_uiState.value.copy(
+                balanceError="Starting balance must be a +ve number"
+            )
+            return
+        }
         viewModelScope.launch {
             val paymentModeId = repository.insertPaymentMode(
                 PaymentMode(
                     ptId = 0,
                     ptTitle = title,
                     ptDescription = description,
-                    ptStartingBalance = startingBalance,
+                    ptStartingBalance = balance,
                     ptIconUrl = ""
                 )
             )
-            if (startingBalance > 0f) {
+            if (balance > 0f) {
                 repository.insertTransaction(
                     Transaction(
                         tId = 0,
                         tTitle = "Opening Balance",
-                        tDescription = "Initial balance for $title",
-                        tAmount = startingBalance,
+                        tDescription = "Initial balance for $trimmedTitle",
+                        tAmount = balance,
                         tDate = Date(),
                         tIsExpense = false,
                         tCategoryId = -1L,
@@ -99,7 +127,7 @@ class SettingsViewModel(
                     )
                 )
             }
-            _uiState.value = _uiState.value.copy(showAddPaymentModeDialog = false)
+            _uiState.value = _uiState.value.copy(showAddPaymentModeDialog = false, nameError = null, balanceError= null)
         }
     }
 
@@ -133,6 +161,94 @@ class SettingsViewModel(
             paymentModeToDelete = null
         )
     }
+
+    //editing
+    fun onEditCategory(category: Category){
+        _uiState.value = _uiState.value.copy(
+            categoryBeingEdited=category
+        )
+    }
+    fun onEditPaymentMode(paymentMode: PaymentMode){
+        _uiState.value=_uiState.value.copy(
+            paymentModeBeingEdited=paymentMode
+        )
+    }
+
+    fun onUpdateCategory(updatedName: String){
+        val category=_uiState.value.categoryBeingEdited ?: return
+        val trimmedName=updatedName.trim()
+        if (isDuplicateCategoryName(trimmedName)) {
+            _uiState.value=_uiState.value.copy(
+                nameError="Category already exists"
+            )
+            return
+        }
+
+        viewModelScope.launch{
+            repository.updateCategory(
+                category.copy(catTitle=trimmedName)
+            )
+            _uiState.value = _uiState.value.copy(categoryBeingEdited = null, nameError = null)
+        }
+    }
+    fun onUpdatePaymentMode(title: String, description: String
+    ) {
+
+        val paymentMode=_uiState.value.paymentModeBeingEdited ?: return
+        val trimmedTitle=title.trim()
+
+        if (isDuplicatePaymentModeName(trimmedTitle)) {
+            _uiState.value=_uiState.value.copy(
+                nameError="Payment mode already exists"
+            )
+            return
+        }
+        viewModelScope.launch {
+            repository.updatePaymentMode(
+                paymentMode.copy(
+                    ptTitle=title,
+                    ptDescription=description
+                )
+            )
+            _uiState.value=_uiState.value.copy(paymentModeBeingEdited=null, nameError=null)
+        }
+    }
+
+    //Duplicate
+    private fun isDuplicateCategoryName(name: String): Boolean{
+        val normal=name.trim().lowercase()
+        return _uiState.value.categories.any{
+            it.catTitle.trim().lowercase()==normal&&
+                    it.catId !=_uiState.value.categoryBeingEdited?.catId
+        }
+    }
+
+    private fun isDuplicatePaymentModeName(name: String): Boolean {
+        val normal = name.trim().lowercase()
+        return _uiState.value.paymentModes.any {
+            it.ptTitle.trim().lowercase() == normal&&
+                    it.ptId != _uiState.value.paymentModeBeingEdited?.ptId
+        }
+    }
+
+    fun onNameChanged(){
+        if (_uiState.value.nameError != null) {
+            _uiState.value = _uiState.value.copy(nameError = null)
+        }
+    }
+    private fun validateStartingBalance(text: String): Float?{
+        val value=text.toFloatOrNull() ?: return null
+        return if(value < 0f) null else value
+    }
+
+    fun onBalanceChanged(){
+        if (_uiState.value.balanceError !=null){
+            _uiState.value=_uiState.value.copy(balanceError = null)
+        }
+    }
+
+
+
 
     companion object {
         val Factory: ViewModelProvider.Factory=viewModelFactory{

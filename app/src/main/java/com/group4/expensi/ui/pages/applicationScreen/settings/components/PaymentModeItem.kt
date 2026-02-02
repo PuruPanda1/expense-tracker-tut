@@ -3,6 +3,7 @@ package com.group4.expensi.ui.pages.applicationScreen.settings.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -12,7 +13,8 @@ import androidx.compose.ui.unit.dp
 fun PaymentModeItem(
     title: String,
     description: String,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    onEditClick: () -> Unit
 ) {
     Surface(
         shape = MaterialTheme.shapes.medium,
@@ -36,6 +38,12 @@ fun PaymentModeItem(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            IconButton(onClick = onEditClick) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit payment mode"
                 )
             }
 

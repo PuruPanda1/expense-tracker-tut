@@ -17,7 +17,9 @@ import androidx.navigation.NavController
 import com.group4.expensi.viewModel.auth.AuthState
 import com.group4.expensi.viewModel.auth.AuthViewModel
 import com.group4.expensi.navigation.expensiAppNavigation.ExpensiRoutes
+import com.group4.expensi.ui.pages.applicationScreen.settings.components.CategoryDialog
 import com.group4.expensi.ui.pages.applicationScreen.settings.components.CategoryItem
+import com.group4.expensi.ui.pages.applicationScreen.settings.components.PaymentModeDialog
 import com.group4.expensi.viewModel.settings.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,6 +107,9 @@ fun SettingsScreen(authViewModel: AuthViewModel, navController: NavController) {
                             title = category.catTitle,
                             onDeleteClick = {
                                 settingsViewModel.onRequestDeleteCategory(category)
+                            },
+                            onEditClick={
+                                settingsViewModel.onEditCategory(category)
                             }
                         )
                     }
@@ -122,6 +127,9 @@ fun SettingsScreen(authViewModel: AuthViewModel, navController: NavController) {
                             description = paymentMode.ptDescription,
                             onDeleteClick = {
                                 settingsViewModel.onRequestDeletePaymentMode(paymentMode)
+                            },
+                            onEditClick={
+                                settingsViewModel.onEditPaymentMode(paymentMode)
                             }
                         )
                     }
@@ -129,18 +137,68 @@ fun SettingsScreen(authViewModel: AuthViewModel, navController: NavController) {
             }
         }
     }
+
     if (uiState.showAddCategoryDialog) {
-        _root_ide_package_.com.group4.expensi.ui.pages.applicationScreen.settings.components.AddCategoryDialog(
+        _root_ide_package_.com.group4.expensi.ui.pages.applicationScreen.settings.components.CategoryDialog(
+            title = "Add Category",
+            initialValue = "",
+            confirmText = "Add",
             onDismiss = settingsViewModel::onDismissDialogs,
-            onAddCategory = settingsViewModel::onAddCategory
+            onConfirm = settingsViewModel::onAddCategory,
+            errorMessage=uiState.nameError,
+            onNameChange = settingsViewModel::onNameChanged
         )
     }
+    uiState.categoryBeingEdited?.let{category ->
+        CategoryDialog(
+            title="Edit Category",
+            initialValue=category.catTitle,
+            confirmText="Save",
+            onDismiss=settingsViewModel::onDismissDialogs,
+            onConfirm=settingsViewModel::onUpdateCategory,
+            errorMessage = uiState.nameError,
+            onNameChange = settingsViewModel::onNameChanged
+
+        )
+    }
+
     if (uiState.showAddPaymentModeDialog) {
-        _root_ide_package_.com.group4.expensi.ui.pages.applicationScreen.settings.components.AddPaymentModeDialog(
+        PaymentModeDialog(
+            title="Add Payment Mode",
+            initialName = "",
+            initialDescription = "",
+            isEditMode = false,
             onDismiss = settingsViewModel::onDismissDialogs,
-            onAddPaymentMode = settingsViewModel::onAddPaymentMode
+            onConfirm = settingsViewModel::onAddPaymentMode,
+            errorMessage = uiState.nameError,
+            onNameChange = settingsViewModel::onNameChanged,
+            errorBalanceMessage = uiState.balanceError,
+            onBalanceChange = settingsViewModel::onBalanceChanged
+
         )
     }
+    uiState.paymentModeBeingEdited?.let { paymentMode ->
+        PaymentModeDialog(
+            title = "Edit Payment Mode",
+            initialName = paymentMode.ptTitle,
+            initialDescription = paymentMode.ptDescription,
+            isEditMode = true,
+            onDismiss = settingsViewModel::onDismissDialogs,
+            onConfirm = { name, description, _ ->
+                settingsViewModel.onUpdatePaymentMode(
+                    title = name,
+                    description = description
+                )
+            }
+            ,errorMessage = uiState.nameError,
+            onNameChange = settingsViewModel::onNameChanged,
+            errorBalanceMessage = uiState.balanceError,
+            onBalanceChange=settingsViewModel::onBalanceChanged
+
+        )
+    }
+
+
     uiState.categoryToDelete?.let { category ->
         _root_ide_package_.com.group4.expensi.ui.pages.applicationScreen.settings.components.DeleteConfirmationDialog(
             title = "Delete Category",
@@ -149,6 +207,7 @@ fun SettingsScreen(authViewModel: AuthViewModel, navController: NavController) {
             onDismiss = settingsViewModel::cancelDelete
         )
     }
+
     uiState.paymentModeToDelete?.let { paymentMode ->
         _root_ide_package_.com.group4.expensi.ui.pages.applicationScreen.settings.components.DeleteConfirmationDialog(
             title = "Delete Payment Mode",
@@ -157,5 +216,6 @@ fun SettingsScreen(authViewModel: AuthViewModel, navController: NavController) {
             onDismiss = settingsViewModel::cancelDelete
         )
     }
+
 }
 
