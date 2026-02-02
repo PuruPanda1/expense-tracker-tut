@@ -27,6 +27,9 @@ class AuthViewModel : ViewModel(){
     var cnfPassword by mutableStateOf("")
         private set
 
+    var phoneNumber by mutableStateOf("")
+        private set
+
     fun onEmailChange(value: String) {
         email = value
     }
@@ -37,6 +40,10 @@ class AuthViewModel : ViewModel(){
 
     fun onCnfPasswordChange(value: String) {
         cnfPassword = value
+    }
+
+    fun onPhoneNumberChange(value: String) {
+        phoneNumber = value
     }
 
     fun checkAuthStatus(){
@@ -86,6 +93,10 @@ class AuthViewModel : ViewModel(){
                     _authState.value = AuthState.Error(task.exception?.message?:"Something went wrong")
                 }
             }
+    }
+
+    fun updateAuthenticationStatus(authState: AuthState){
+        _authState.value = authState
     }
 
     fun signOut(){

@@ -13,9 +13,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,18 +37,24 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.expensi.R
 import com.group4.expensi.auth.AuthState
 import com.group4.expensi.auth.AuthViewModel
 import com.group4.expensi.navigation.ExpensiRoutes
-import com.group4.expensi.ui.components.TopBar
+import com.group4.expensi.ui.pages.welcomeScreen.components.TopScreenAnimation
+import com.group4.expensi.ui.theme.Black
+import com.group4.expensi.ui.theme.GrayText
+import com.group4.expensi.ui.theme.OffWhite
+import com.group4.expensi.ui.theme.OnPrimary
+import com.group4.expensi.ui.theme.PrimaryBlue
+import com.group4.expensi.ui.theme.TranslucentPrimary
+import com.group4.expensi.ui.theme.White
 import com.group4.expensi.utils.isFormValid
 import com.group4.expensi.utils.isValidEmail
 import com.group4.expensi.utils.validatePassword
@@ -54,6 +69,7 @@ fun LoginPage(
     val authState = authViewModel.authState.observeAsState()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    var passwordVisible by remember { mutableStateOf(false) }
 
     var emailError by rememberSaveable { mutableStateOf<String?>(null) }
     var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
@@ -80,27 +96,31 @@ fun LoginPage(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
+            .background(
+                brush = Brush.verticalGradient(
+                    colorStops = arrayOf(
+                        0.0f to PrimaryBlue,   // very top
+                        0.1f to PrimaryBlue,   // top 10%
+                        1.0f to Black       // fade to black/white
+                    )
+                )
+            )
+            .padding(horizontal = 32.dp)
+            .verticalScroll(scrollState)
+            .imePadding(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
+    {
         Spacer(modifier = Modifier.height(32.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                .padding(24.dp)
-                .verticalScroll(scrollState)
-                .imePadding(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.welcome_back),
+        TopScreenAnimation(height = 250.dp)
+        Text(
+                text = "Expensi - Expense Manager",
                 style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface
+                color = White
             )
             Text(
-                text = stringResource(R.string.login_in_to_continue),
+                text = "Login to your account",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -112,11 +132,26 @@ fun LoginPage(
                     emailError = if (isValidEmail(it)) null else "Invalid email address"
                                 },
                 label = { Text("Email") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = "Email icon"
+                    )
+                },
                 singleLine = true,
                 isError = emailError != null,
                 supportingText = {
                     emailError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = PrimaryBlue,
+                    focusedLabelColor = PrimaryBlue,
+                    focusedLeadingIconColor = PrimaryBlue,
+                    cursorColor = PrimaryBlue,
+                    unfocusedBorderColor = GrayText,
+                    unfocusedLabelColor = GrayText,
+                    unfocusedLeadingIconColor = GrayText
+                ),
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
@@ -126,12 +161,41 @@ fun LoginPage(
                     passwordError = validatePassword(it)
                                 },
                 label = { Text("Password") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = "Password icon"
+                    )
+                },
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = if (passwordVisible)
+                                Icons.Default.Visibility
+                            else
+                                Icons.Default.VisibilityOff,
+                            contentDescription = if (passwordVisible)
+                                "Hide password"
+                            else
+                                "Show password"
+                        )
+                    }
+                },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 isError = passwordError != null,
                 supportingText = {
                     passwordError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = PrimaryBlue,
+                    focusedLabelColor = PrimaryBlue,
+                    focusedLeadingIconColor = PrimaryBlue,
+                    cursorColor = PrimaryBlue,
+                    unfocusedBorderColor = GrayText,
+                    unfocusedLabelColor = GrayText,
+                    unfocusedLeadingIconColor = GrayText
+                ),
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -147,10 +211,17 @@ fun LoginPage(
                     emailError,
                     passwordError,
                     null
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PrimaryBlue,
+                    contentColor = OnPrimary,
+                    disabledContainerColor = TranslucentPrimary,
+                    disabledContentColor = OnPrimary.copy(alpha = 0.6f)
                 )
             ) {
                 Text("Login")
             }
+        Spacer(Modifier.height(16.dp))
             Button(
                 onClick = {
                     navController.navigate(ExpensiRoutes.PHONE_LOGIN.route)
@@ -159,6 +230,10 @@ fun LoginPage(
                     .fillMaxWidth()
                     .height(48.dp),
                 shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = OffWhite,
+                    contentColor = PrimaryBlue
+                ),
             ) {
                 Text("Login using Phone number")
             }
@@ -166,9 +241,8 @@ fun LoginPage(
                 onClick = { navigateToSignupPage(navController) },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(stringResource(R.string.don_t_have_an_account_sign_up))
+                Text(stringResource(R.string.don_t_have_an_account_sign_up),  color = PrimaryBlue)
             }
-        }
     }
 }
 private fun navigateToSignupPage(navController: NavHostController) {
