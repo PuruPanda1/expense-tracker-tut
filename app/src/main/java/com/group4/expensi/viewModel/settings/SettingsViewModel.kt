@@ -237,6 +237,7 @@ class SettingsViewModel(
         }
     }
     private fun validateStartingBalance(text: String): Float?{
+        if (text.isBlank()) return 0f
         val value=text.toFloatOrNull() ?: return null
         return if(value < 0f) null else value
     }
